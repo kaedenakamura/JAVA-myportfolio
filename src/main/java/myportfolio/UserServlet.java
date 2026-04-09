@@ -1,7 +1,6 @@
 package myportfolio;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,7 +25,8 @@ public class UserServlet extends HttpServlet {
 		
 	//設定
 		response.setContentType("text/html; charset=UTF-8");
-		PrintWriter out = response.getWriter();
+		request.setCharacterEncoding("UTF-8");
+		
 		
 	
 	//　getParameterでhtmlよりimput
@@ -34,6 +34,7 @@ public class UserServlet extends HttpServlet {
 		String password = request.getParameter("password");
 		String name = request.getParameter("name");
 		
+		// 受け取りチェック
 		System.out.println("--- Servlet受け取りチェック---- ");
 	    System.out.println("HTMLから届いた name: " + name);
 	    System.out.println("HTMLから届いた email: " + email);
@@ -43,16 +44,11 @@ public class UserServlet extends HttpServlet {
 		User user = new User(email, password, name);
 		UserDao userDao = new UserDao();
 		
-		out.println("<html><body>");
 		if(userDao.insert(user)) {
-			out.println("<h1>Webからの登録に成功しました!</h1>");
-			out.println("<p>登録されたメールアドレス;"+email+"</p>");
-		}else {
-			out.println("<h1>登録に失敗しました....</h1>");
-			out.println("<p>重複チェックやDB接続を確認してください<p>");
+		    response.sendRedirect("list"); 
+		} else {
+		    response.sendRedirect("html/register.html"); 
 		}
-		out.println("</body></html>");
-		
 		}
 	
 	

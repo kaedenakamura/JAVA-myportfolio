@@ -19,10 +19,6 @@ public class UserDao {
 	//===============================================-
 	
 	public boolean insert(User user) {
-		try {
-		    Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-		    e.printStackTrace(); 
 		
 		try {
 		    System.out.println("ドライバ読み込みテスト開始 ");
@@ -79,6 +75,7 @@ public class UserDao {
 		}
 		return isSuccess;
 	 }
+	
 	
 	//===============================================
 	//findAllメソッドにて全件検索を行いリストに格納する
