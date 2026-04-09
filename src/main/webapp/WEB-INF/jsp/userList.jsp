@@ -48,7 +48,7 @@
     	 %>
     	 </table>
     	 
-    	 <p><a href="/myportfolio/html/register.html">新規登録画面へ戻る</a>
+    	 <p><a href="/myportfolio/html/register.jsp">新規登録画面へ戻る</a>
     	 	
     
     

@@ -34,6 +34,15 @@ public class UserServlet extends HttpServlet {
 		String password = request.getParameter("password");
 		String name = request.getParameter("name");
 		
+	if (name == null || name.isEmpty() || name.length()>250 || email == null || email.isEmpty() ||
+			password ==null || password.length()< 8
+			) {
+		response.sendRedirect("html/register.jsp?error=1");
+		
+		System.out.println("バリデーションエラー：空のデータがあるため登録を中止します");
+		return;
+			}
+		
 		// 受け取りチェック
 		System.out.println("--- Servlet受け取りチェック---- ");
 	    System.out.println("HTMLから届いた name: " + name);
@@ -47,7 +56,7 @@ public class UserServlet extends HttpServlet {
 		if(userDao.insert(user)) {
 		    response.sendRedirect("list"); 
 		} else {
-		    response.sendRedirect("html/register.html"); 
+		    response.sendRedirect("/html/register.jsp"); 
 		}
 		}
 	
