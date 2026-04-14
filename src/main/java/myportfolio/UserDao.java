@@ -14,12 +14,8 @@ public class UserDao {
 	private final String USER     = "root";
 	private final String PASS     = "ROOT";
 	
-	//===============================================-
-	//insertメソッドにてデータの追加を行うクラスを作成。
-	//===============================================-
-	
-	public boolean insert(User user) {
-		
+	//コンストラクターとして最初にDB接続を開通させる
+	public UserDao() {
 		try {
 		    System.out.println("ドライバ読み込みテスト開始 ");
 		    Class.forName("com.mysql.cj.jdbc.Driver");
@@ -28,6 +24,13 @@ public class UserDao {
 		    System.out.println("❌ドライバが見つかりません.JARの配置が間違っています。");
 		    e.printStackTrace();
 		}
+	}
+	
+	//===============================================-
+	//insertメソッドにてデータの追加を行うクラスを作成。
+	//===============================================-
+	
+	public boolean insert(User user) {
 		
 		//  変数の宣言
 		Connection con = null;
@@ -86,11 +89,7 @@ public class UserDao {
 		List<User> userList = new ArrayList<>();
 		
 		String sql = "SELECT * FROM users";
-		try {
-		    Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-		    e.printStackTrace(); 
-		}
+
 		try (Connection con = DriverManager.getConnection(JDBC_URL, USER, PASS);
 				PreparedStatement ps = con.prepareStatement(sql);
 				// SQLの実行、結果の受け取り 
@@ -106,5 +105,116 @@ public class UserDao {
 					}
 				
 		return userList;
+	}
+	
+
+	//===============================================
+	//isEmailExsisメソッドにてDBへemailの２重登録を防ぐメソッドを作成
+	//===============================================
+	public boolean isEmailExists(String email) {
+		String sql ="SELECT COUNT(*) FROM users WHERE email = ? ";
+		
+		try(Connection con = DriverManager.getConnection(JDBC_URL ,USER ,PASS);
+				PreparedStatement ps = con.prepareStatement(sql)){
+			ps.setString(1,email);
+			try(ResultSet rs = ps.executeQuery()){
+				if (rs.next()) {
+					return rs.getInt(1)>0;
+					}
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+
+	//===============================================
+	//ログイン画面よりアクセスしたときのDBへemailとpasswordを探すそして見つかればセットする
+	//===============================================
+	public User findUser(String email , String password) {
+		User user = null;
+		String sql ="SELECT * FROM users WHERE email = ? AND password = ?";
+		
+		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps =con.prepareStatement(sql)){
+			//select1番目と２番目の「?」へセット
+			ps.setString(1,email);
+			ps.setString(2,password);
+			
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next()) {
+					//見つかったら、そのデータでUserオブジェクトを作る
+					user = new User();
+					user.setId(rs.getInt("id"));
+					user.setEmail(rs.getString("email"));
+					user.setName(rs.getString("name"));
+				}
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+	return user;
+	}
+	
+	//===============================================
+	//1人のIDの全情報を取得するメソッド作成
+	//===============================================
+	public User findById(int ids) {
+		User user = null;
+		
+		String sql = "SELECT * FROM users WHERE id =?";
+		
+		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps =con.prepareStatement(sql)){
+				//select「？」へセット
+				ps.setInt(1, ids);
+				
+				try(ResultSet rs = ps.executeQuery()){
+					if(rs.next()) {
+					//SQLを実行して結果を受け取る 
+					int id =rs.getInt("id");
+					String name = rs.getString("name");
+					String email = rs.getString("email");
+					user = new User(id , name ,email);
+					System.out.println(name + id);
+					}
+				}catch (SQLException e) {
+					e.printStackTrace();
+				}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		return user;
+				
+		
+	}
+	
+
+	
+	//===============================================
+	//ダッシュボードよりユーザー情報の更新(UPDATE)
+	//===============================================
+	public boolean update(User user) {
+		String sql ="UPDATE users SET name = ? , email = ? WHERE id = ? ";
+		boolean isSuccess = false;
+		
+		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps = con.prepareStatement(sql)){
+			//SQLの「‽」へセット
+			ps.setString(1,user.getName());
+			ps.setString(2,user.getEmail());
+			ps.setInt(3,user.getId());
+			
+			int result =ps.executeUpdate();
+			if(result > 0) {
+				System.out.println("ID:"+user.getId()+"の更新に成功しました");
+				isSuccess = true;
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return isSuccess;
 	}
 } 
