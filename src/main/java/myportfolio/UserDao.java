@@ -43,17 +43,22 @@ public class UserDao {
 			con = DriverManager.getConnection(JDBC_URL, USER, PASS);
 
 			//  SQLの作成
-			String sql = "INSERT INTO users (email, password, name) VALUES (?, ?, ?)";
+			String sql = "INSERT INTO users (name, ruby, email, password, role, gender, age, bio, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			//  実行準備
 			ps = con.prepareStatement(sql);
 
 			//  値のセット
-			ps.setString(1, user.getEmail());
-			ps.setString(2, user.getpassword());
-			ps.setString(3, user.getName());
-
-			//  実行
+			ps.setString(1, user.getName());
+	        ps.setString(2, user.getRuby());
+	        ps.setString(3, user.getEmail());
+	        ps.setString(4, user.getPassword());
+	        ps.setInt(5, user.getRole());
+	        ps.setString(6, user.getGender());
+	        ps.setInt(7, user.getAge());
+	        ps.setString(8, user.getBio());
+	        ps.setString(9, user.getProfileImage());
+	        
 			int result = ps.executeUpdate();
 
 			if (result > 0) {
@@ -81,14 +86,14 @@ public class UserDao {
 	
 	
 	//===============================================
-	//findAllメソッドにて全件検索を行いリストに格納する
+	//findAllメソッドにて全件検索を行いリストに格納する（is_delete追加:0は通常１は削除済）
 	//===============================================
 	
 	public List<User> findAll(){
 		//空の「名簿リスト」を用意
 		List<User> userList = new ArrayList<>();
 		
-		String sql = "SELECT * FROM users";
+		String sql = "SELECT * FROM users WHERE is_deleted = 0";
 
 		try (Connection con = DriverManager.getConnection(JDBC_URL, USER, PASS);
 				PreparedStatement ps = con.prepareStatement(sql);
@@ -96,8 +101,19 @@ public class UserDao {
 				ResultSet rs = ps.executeQuery()){
 					while(rs.next()) {
 						// 1件分のデータ（名前、アドレス、パス）をUserオブジェクトへ
-						User user = new User
-								(rs.getString("email"),rs.getString("password"),rs.getString("name"));
+						User user = new User(
+								rs.getInt("id"),
+						        rs.getString("name"),
+						        rs.getString("email"),
+						        rs.getString("password"),
+						        rs.getInt("role"),
+						        rs.getString("ruby"),
+						        rs.getString("gender"),
+						        rs.getInt("age"),
+						        rs.getString("bio"),
+						        rs.getString("profile_image"),
+						        rs.getInt("is_deleted"));
+						
 						// Userオブジェクトをリストに追加
 						userList.add(user);}
 					}catch (SQLException e) {
@@ -159,7 +175,7 @@ public class UserDao {
 	}
 	
 	//===============================================
-	//1人のIDの全情報を取得するメソッド作成
+	//1人のIDの全情報を取得するメソッド作成(findById)
 	//===============================================
 	public User findById(int ids) {
 		User user = null;
@@ -175,10 +191,20 @@ public class UserDao {
 					if(rs.next()) {
 					//SQLを実行して結果を受け取る 
 					int id =rs.getInt("id");
-					String name = rs.getString("name");
-					String email = rs.getString("email");
-					user = new User(id , name ,email);
-					System.out.println(name + id);
+					user = new User(
+							rs.getInt("id"),
+		                    rs.getString("name"),
+		                    rs.getString("email"),
+		                    rs.getString("password"),
+		                    rs.getInt("role"),
+		                    rs.getString("ruby"),
+		                    rs.getString("gender"),
+		                    rs.getInt("age"),
+		                    rs.getString("bio"),
+		                    rs.getString("profile_image"),
+		                    rs.getInt("is_deleted")
+							);
+					System.out.println(id +"DBより全情報を取得しました");
 					}
 				}catch (SQLException e) {
 					e.printStackTrace();
@@ -197,15 +223,21 @@ public class UserDao {
 	//ダッシュボードよりユーザー情報の更新(UPDATE)
 	//===============================================
 	public boolean update(User user) {
-		String sql ="UPDATE users SET name = ? , email = ? WHERE id = ? ";
+		String sql ="UPDATE users SET name=?, ruby=?, email=?, role=?, gender=?, age=?, bio=?, profile_image=? WHERE id=?";
 		boolean isSuccess = false;
 		
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps = con.prepareStatement(sql)){
 			//SQLの「‽」へセット
-			ps.setString(1,user.getName());
-			ps.setString(2,user.getEmail());
-			ps.setInt(3,user.getId());
+			ps.setString(1, user.getName());
+	        ps.setString(2, user.getRuby());
+	        ps.setString(3, user.getEmail());
+	        ps.setInt(4, user.getRole());
+	        ps.setString(5, user.getGender());
+	        ps.setInt(6, user.getAge());
+	        ps.setString(7, user.getBio());
+	        ps.setString(8, user.getProfileImage());
+	        ps.setInt(9, user.getId());
 			
 			int result =ps.executeUpdate();
 			if(result > 0) {
@@ -217,4 +249,194 @@ public class UserDao {
 		}
 		return isSuccess;
 	}
-} 
+	
+	//===============================================
+	//ダッシュボードよりユーザー情報の削除(DELETE)
+	//===============================================
+	public boolean delete(int id) {
+		String sql ="DELETE from users WHERE id = ? ";
+		boolean isSuccess = false ;
+		
+		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps =con.prepareStatement(sql)){
+			//削除したい項目[?]へセット(jspより持ってくる)
+			ps.setInt(1,id);
+			//実行して削除
+			int result =ps.executeUpdate();
+			if (result > 0 ) {
+				isSuccess = true ;
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return isSuccess;
+	}
+	//===============================================
+		//ファインドページメソッドの作成（５件ずつリストを表示するメソッド）
+	//===============================================
+	public List<User> findByPage(int page){
+		//offsetとlimit用いてページ数表示
+		List<User> list = new ArrayList<>();
+		int limit = 5;
+		int offset = (page - 1)* limit;
+		
+		String sql ="SELECT * FROM users WHERE is_deleted = 0 LIMIT ? OFFSET ?";
+		
+		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps = con.prepareStatement(sql)){
+			ps.setInt(1,limit);
+			ps.setInt(2, offset);
+			
+			try(ResultSet rs = ps.executeQuery()){
+				while(rs.next()) {
+					User user = new User(
+							rs.getInt("id"),
+					        rs.getString("name"),
+					        rs.getString("email"),
+					        rs.getString("password"),
+					        rs.getInt("role"),
+					        rs.getString("ruby"),
+					        rs.getString("gender"),
+					        rs.getInt("age"),
+					        rs.getString("bio"),
+					        rs.getString("profile_image"),
+					        rs.getInt("is_deleted"));
+							
+					list.add(user);
+				}
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+	//===============================================
+	//countAllメソッドの作成。(全部計算してユーザー人数の合計を出す)
+	//===============================================
+	public int countAll() {
+		String sql ="SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0";
+		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps =con.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()){
+			if (rs.next()) {
+				return rs.getInt("count");
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//
+		return 0;
+	}
+
+	//===============================================
+	//updateRole（admin,general）切替のメソッド
+	//===============================================
+	public boolean updateRole(int id ,int role) {
+		//デバック
+		System.out.println("ID:" + id + ", Role:" + role);
+		String sql ="UPDATE users SET role = ? WHERE id = ?";
+		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
+			PreparedStatement ps = con.prepareStatement(sql)){
+			//DBよりservletへセット
+			//role　1=admin 0=general
+			ps.setInt(1, role);
+			ps.setInt(2, id);
+			
+			int result = ps.executeUpdate();
+			//デバック
+			System.out.println("更新された行数: " + result);
+			return result > 0;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+
+	//===============================================
+	//論理削除(データを復元できるように残しておく)実行メソッド 0が残す1が消去済みに設定
+	//===============================================
+	public boolean softDelete(int id) {
+		//デバック
+		System.out.println("ID"+id+"の論理削除を実行します");
+		
+		String sql = "UPDATE users SET is_deleted = 1 WHERE id = ?";
+		boolean isSuccess = false;
+		
+		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps = con.prepareStatement(sql)){
+			ps.setInt(1,id);
+			
+			int result = ps.executeUpdate();
+			if (result > 0) {
+				if(result > 0) {
+					System.out.println("ID:"+id+"の論理削除に成功しました");
+					isSuccess = true;
+				}
+			}
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return isSuccess;
+	}
+	
+	//===============================================
+	//findDeletedAllメソッドにて削除済のアカウント(is_deletedの中の１削除済)の全件検索を行いリストに格納する
+	//===============================================
+		
+		public List<User> findDeletedAll(){
+			//空の「名簿リスト」を用意
+			List<User> userList = new ArrayList<>();
+			
+			String sql = "SELECT * FROM users WHERE is_Deleted = 1";
+
+			try (Connection con = DriverManager.getConnection(JDBC_URL, USER, PASS);
+					PreparedStatement ps = con.prepareStatement(sql);
+					// SQLの実行、結果の受け取り 
+					ResultSet rs = ps.executeQuery()){
+						while(rs.next()) {
+							// 1件分のデータ（全ての情報）をUserオブジェクトへ
+							User user = new User(
+									rs.getInt("id"),
+							        rs.getString("name"),
+							        rs.getString("email"),
+							        rs.getString("password"),
+							        rs.getInt("role"),
+							        rs.getString("ruby"),
+							        rs.getString("gender"),
+							        rs.getInt("age"),
+							        rs.getString("bio"),
+							        rs.getString("profile_image"),
+							        rs.getInt("is_deleted"));
+							// Userオブジェクトをリストに追加
+							userList.add(user);}
+						}catch (SQLException e) {
+							e.printStackTrace();
+						}
+					
+			return userList;
+		}
+	//===============================================
+	//削除したアカウントを復活させるrestorメソッド（消去済み１→復活０へ数字を戻す）
+	//===============================================
+		public boolean restor(int id) {
+			//フラグを０に戻す
+			String sql ="UPDATE users SET is_deleted = 0 WHERE id = ? ";
+			boolean isSuccess = false;
+			
+			try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+					PreparedStatement ps =con.prepareStatement(sql);){
+				ps.setInt(1, id);
+				
+				int result = ps.executeUpdate();
+				//１行以上更新されたらtrue
+				if (result > 0) {
+					System.out.println("ID:"+id+"の復元に成功しました");
+					isSuccess = true;
+				}
+			}catch(SQLException e ) {
+				e.printStackTrace();
+			}
+			return isSuccess;
+		}
+}

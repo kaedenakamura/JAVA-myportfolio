@@ -2,26 +2,87 @@ package myportfolio;
 
 public class User {
 	private int id;
+	private String name;
+	private String ruby;
 	private String email;
 	private String password;
-	private String name;
 	private java.sql.Timestamp createdAt;
 	private java.sql.Timestamp updatedAt;
 	private java.sql.Timestamp deletedAt;
-	
-	public  User(String email, String password, String name) {
+	private int role;
+	private String gender;
+    private int age;
+    private String bio;
+    private String profileImage;
+    private int isDeleted;
+    
+    
+    // デフォルトコンストラクタ
+    public User() {
+		// コンストラクターなし
+	}
+	public  User(String name, String email, String password) {
         this.email = email;
         this.password = password;
         this.name = name;
     }
-	public User() {
-		
+	public User(int id, String name, String email, String password) {
+		 this.id = id;
+		 this.email = email;
+	     this.password = password;
+	     this.name = name;
 	}
 	public User(int id, String name, String email) {
 		this.id =id;
 		this.name = name;
 		this.email = email;
 	}
+	public User(int id, String name,String ruby , String email, String password) {
+		 this.id = id;
+		 this.email = email;
+	     this.password = password;
+	     this.name = name;
+	     this.setRuby(ruby) ;
+	}
+	public User(String name,String ruby , String email, String password) {
+		 this.email = email;
+	     this.password = password;
+	     this.name = name;
+	     this.setRuby(ruby) ;
+	}
+	// 全項目入りのコンストラクタ(DAO用)
+    public User(int id, String name, String email, String password, int role, 
+                String ruby, String gender, int age, String bio, String profileImage) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.ruby = ruby;
+        this.gender = gender;
+        this.age = age;
+        this.bio = bio;
+        this.profileImage = profileImage;
+    }
+ // 全項目入りのコンストラクタ(DAO用)+isDaleted追加分
+    public User(int id, String name, String email, String password, int role, 
+                String ruby, String gender, int age, String bio, String profileImage ,int isDeleted) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.ruby = ruby;
+        this.gender = gender;
+        this.age = age;
+        this.bio = bio;
+        this.profileImage = profileImage;
+        this.isDeleted = isDeleted;
+    }
+
+	
+	
+	
 	public int getId() {
 		return id;
 	}
@@ -34,7 +95,7 @@ public class User {
 	public void setEmail(String email){
 		this.email = email;
 	}
-	public String getpassword() {
+	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
@@ -53,8 +114,8 @@ public class User {
 	public java.sql.Timestamp getUpdetedAt() {
 		return updatedAt;
 	}
-	public void setUpdetedAt(java.sql.Timestamp updetedAt) {
-		this.updatedAt = updetedAt;
+	public void setUpdetedAt(java.sql.Timestamp updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 	public java.sql.Timestamp getDeletedAt() {
 		return deletedAt;
@@ -62,7 +123,49 @@ public class User {
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
-	
+	public String getRuby() {
+		return ruby;
+	}
+	public void setRuby(String ruby) {
+		this.ruby = ruby;
+	}
+	public int getRole() {
+	    return role;
+	}
+	public void setRole(int role) {
+	    this.role = role;
+	}
+	public String getBio() {
+		return bio;
+	}
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	  
+    public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getProfileImage() {
+		return profileImage;
+	}
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+	public int getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(int isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 	
 }
 

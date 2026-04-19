@@ -44,7 +44,7 @@ if (latestUser == null ){
 <p>ようこそ、<%= latestUser.getName() %> さん！</p>
 <a href="../logout">ログアウト </a>
 <h2>プロフィール画面</h2>
-<form action="../UpdateServlet" method="post">
+<form action="../update" method="post">
 	<input type="hidden"name="id" value="<%= latestUser.getId() %>">
 	<p>
 	 名前:<br>

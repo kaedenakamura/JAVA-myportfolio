@@ -3,7 +3,7 @@ package myportfolio;
 public class Main {
 
 	public static void main(String[] args) {
-		User user = new User("a@example.com","root","kaede");
+		User user = new User();
 		UserDao userDao = new UserDao();
 		
 		if(userDao.insert(user)) {
