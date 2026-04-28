@@ -8,7 +8,8 @@
 <title>my portfolio</title>
 </head>
 <body>
-	<h1>ユーザー登録</h1>
+<div class="container">
+	<h2>ユーザー登録</h2>
 	<% 
 	//URLのerror=1 を受け取る
 	String error = request.getParameter("error");
@@ -58,8 +59,94 @@
 	<%
 	}
 	%>
-	<%--画像ファイルやファイルが含まれるバイナリーデータの場合、エンクタイプ（エンコードタイプ）設定"multipart/form-data"--%>
-	<form action="../register" method="post" enctype="multipart/form-data">
+<style>
+/*ボックスサイズ*/
+*{box-sizing:border-box;}
+/*画面幅が768以下（スマホ・タブレット）になったら適応 ヘッダーの高さを低くする*/
+@media screen and (max-width:768px){
+.header{height:60px;}
+.item{width:100%;}
+}
+h2{
+color: rgb(0, 0, 0);
+border-bottom:2px solid rgb(255, 255, 128);
+padding-bottom:10px;
+margin-bottom:25px;
+
+}
+/*全体のリセットと背景*/
+body{
+	font-family:"sans-serif";
+	background-color: rgb(255, 255, 255);
+	color:rgb(0, 0, 0);
+	margin:0;
+	padding:20px;
+	}
+/*コンテナ*/
+.form-container , .container{
+	background:rgb(255, 255, 255);
+	max-width:1000px;
+	margin:40px auto;
+	padding:30px;
+	border-radius:12px;
+	/*上下０左右４へ15影をつける　rgba色と透明度(000)は黒 0.05は透明度５％*/
+	box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+textarea{
+ margin-top:10px ;
+}
+/* さらにテーブル自体をコンテナいっぱいに広げる */
+table {
+    width: 100%; 
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+/*入力フォーム*/
+.form-group{margin-bottom:20px;}
+label{font-weight: bold; margin-bottom:8px;}
+input[type="text"]{
+	margin-bottom:20px;
+	width:300px;
+	padding:12px;
+	border:1px solid rgb(0, 255, 255);
+	border-radius:6px;
+	transition:border-color 0.3s;
+	}
+input[type="text"]:focus{
+	border-color:rgb(0, 128, 255);
+	outline: none;
+}
+/*ボタン（青系）*/
+.btn-submit{
+	background-color: rgb(0, 64, 128);
+	color:white;
+	padding:12px 20px;
+	border:none;
+	border-radius:6px;
+	cursor:pointer;
+	width:100%;
+	font-size:16px;
+	font-weight:bold;
+	transition: background 0.3s;
+}	
+/*transitionに対してのホバー色*/
+.btn-submit:hover{
+background-color:rgb(0, 128, 255);
+}
+/*戻るリンク*/
+.back-link{
+	display:block;
+	text-align:center;
+	margin-top:20px;
+	color:rgb(0, 128, 255);
+	text-decoration:none;
+}
+.back-link:hover{
+	text-decoration: underline;
+}	
+</style>
+<%--画像ファイルやファイルが含まれるバイナリーデータの場合、エンクタイプ（エンコードタイプ）設定"multipart/form-data"--%>
+	<form class="form-group" action="../register" method="post" enctype="multipart/form-data">
 		<div>
 		<label>権限</label>
 		<%--現在のロールに合わせてcheckedを切り替える --%>
@@ -79,9 +166,9 @@
 			<input type="radio" name="gender" value="male"id="male" ><label for="male">男</label>
 			<input type="radio" name="gender" value="female" id="female"><label for="female">女</label>
 		</p>
-		<label for="age">年齢</label>
+		<label for="age">年齢:</label>
 		<input type="number" name="age"min="0" max="999" id="age"><br>
-		<label for="bio">自己紹介</label>
+		<label for="bio">自己紹介:</label>
 		<textarea name="bio"id="bio" maxlength="1500" ></textarea><br>
 		<label for="profileImage">プロフィール画像URL</label>
 		<input type="file" id="profileImage" name="profileImage" ><br>
@@ -101,37 +188,37 @@
 	</p>
 	<button type="submit">登録する</button>
 	</form>
-	<div>
-	<a	href="../list">ユーザー一覧へ</a>
-	</div>
-	<div>
-	<a href="login.jsp">ログイン画面へ</a>
-	</div>
+<div>
+	<a class="btn-submit" href="../list">ユーザー一覧へ</a>
+</div>
+<div>
+	<a class="back-link" href="login.jsp">ログイン画面へ</a>
+</div>
+</div>
 	
 	
-	<script>
-	function toggleFields(){
-		//radioボタンの値取得
-		const role = document.querySelector('input[name="role"]:checked').value;
-		console.log("現在のロールは:"+ role);
-		//操作したい「ふりがなの箱」を取得
-		const generalFields =document.getElementById("general-fields");
-		//デバック確認
-		//alert("ボタンが押されました！");
-		if (role == "0"){
-			//一般なら表示
-			generalFields.style.display="block";
-			}else{
-				//管理者なら隠す（none）
-				generalFields.style.display="none";
-
+		<script>
+		function toggleFields(){
+			//radioボタンの値取得
+			const role = document.querySelector('input[name="role"]:checked').value;
+			console.log("現在のロールは:"+ role);
+			//操作したい「ふりがなの箱」を取得
+			const generalFields =document.getElementById("general-fields");
+			//デバック確認
+			//alert("ボタンが押されました！");
+			if (role == "0"){
+				//一般なら表示
+				generalFields.style.display="block";
+				}else{
+					//管理者なら隠す（none）
+					generalFields.style.display="none";
+	
+				}
 			}
-		}
-	// 画面の読み込み（リロードや戻る）が完了した時も実行する
-	window.onload = toggleFields;
-	</script>
-	
-</body>
+		// 画面の読み込み（リロードや戻る）が完了した時も実行する
+		window.onload = toggleFields;
+		</script>
+	</body>
 </html>
 
 

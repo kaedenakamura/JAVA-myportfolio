@@ -7,10 +7,11 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>ユーザ一一覧画面</title>
+    <title>アカウント一覧画面</title>
     </head>
     <body>	
-    <h1>ユーザ一一覧</h1>
+    <div class="container">
+    <h1 class="header">アカウント一覧</h1>
     <%--メッセージがあれば表示する（DeleteメソッドやUpdateメソッド起動完了時に出現） --%>
     <%
     	String message = (String)session.getAttribute("msg");
@@ -26,13 +27,49 @@
     }
     %>
      <style>
-     table {whidth: 100% border-collapse: collapse; margin-top: 20px;}
-     th, td {border:1px solid rgb(0, 255, 128); padding: 10px; text-align; left;}
-     th    {background-color: rgb(255, 255, 128);}
-     
+     	/*ボックスサイズ*/
+	* {box-sizing: border-box;}
+	
+	/*画面幅が768以下（スマホ・タブレット）になったら適応 ヘッダーの高さを低くする*/
+	@media screen and (max-width: 768px){
+	.header{height:60px;}
+	.item{width:100%;}/**/
+	/*画像設定一応おいておく 横幅に合わせて高さ調整*/
+	}
+	/*横並びとflex-wrapで幅が足りないと折り返し*/
+	.container{flex-wrap:wrap;
+	max-width:1000px;
+	margin:40px auto;
+	padding:30px;
+	border-radius:12px;
+	/*上下０左右４へ15影をつける　rgba色と透明度(000)は黒 0.05は透明度５％*/
+	box-shadow:0 4px 15px rgba(0,0,0,0.05);
+	}
+	/* 5. テーブルのスクロール対応 over-frow(スクロールバー出す)*/
+	.table-container{width:100px; overfrow:auto; -weblit-over-scrolling:touch;
+	margin-top:20px;}
+	img{max-width:100%; height:auto;}
+	/*orverflow-x→横方向にはみ出したらスクロールバー出す。webkit→スマホでぬるぬる動かしやすくする*/
+	.table-container{width:100%;overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:20px;}
+	/*min-width:　画面が小さくなっても500pxで止める*/
+	table{width:100%; min-width:500px; border-collapse:collapse; margin-top: 20px;}
+	th,td{border:1px solid rgb(0,255,128); padding: 10px; text-align:left; }
+	th {background-color:rgb(255,255,128);}
+	.btn-create{display:inline-block; border:1px solid rgb(192, 192, 192); margin:10px 0 10px 0; text-decoration:none; color:rgb(0, 255, 128); border-radius:5px; background:rgb(128, 128, 128);transition:0.3s;}
+	.btn-create:hover{background:rgb(0, 255, 255)}
+     /*全体のリセットと背景*/
+body{
+	font-family:"sans-serif";
+	background-color: rgb(255, 255, 255);
+	color:rgb(0, 0, 0);
+	margin:0;
+	padding:20px;
+	}
 
     </style>
-    <table border="1">
+     <div class="item">
+      <div class="table-container">
+    	<table border="1">
     	<tr>
     	<th>id</th>
     	<th>名前</th>
@@ -101,7 +138,8 @@
     		}
     	 %>
     	 </table>
-    	 
+    	 </div>
+      </div>
     	 <div style="margin-top:20px">
     	 <% 
     	 	//サーブレットから渡された「現在のページ番号」を受け取る
@@ -129,8 +167,9 @@
     	 <div style="margin-top: 10px;">
     	 <p><a href="${pageContext.request.contextPath}/deletedList">ユーザー削除済一覧へ</a></p>
     	 </div>
-    	 <p><a href="/myportfolio/html/register.jsp">新規登録画面へ戻る</a></p>
-    	
+    	 <p><a href="${pageContext.request.contextPath}/html/register.jsp">新規登録画面へ戻る</a></p>
+    	 <p><a href="${pageContext.request.contextPath}/html/login.jsp">ログイン画面へ</a></p>
+    </div>
     	 	
     	 <script>
     	 function checkDelete(name){
@@ -138,6 +177,6 @@
         	 return confirm(name +"さんを本当に削除しますか？")
         	 }	    
     	 </script>
-    
+  
     </body>
     </html>

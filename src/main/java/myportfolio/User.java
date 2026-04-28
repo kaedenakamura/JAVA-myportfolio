@@ -15,6 +15,7 @@ public class User {
     private String bio;
     private String profileImage;
     private int isDeleted;
+    private int likeCount;
     
     
     // デフォルトコンストラクタ
@@ -79,7 +80,28 @@ public class User {
         this.profileImage = profileImage;
         this.isDeleted = isDeleted;
     }
-
+ // 全項目入りのコンストラクタ(DAO用)+likeCount追加分
+    public User(int id, String name, String email, String password, int role, 
+                String ruby, String gender, int age, String bio, String profileImage ,int isDeleted, int likeCount) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.ruby = ruby;
+        this.gender = gender;
+        this.age = age;
+        this.bio = bio;
+        this.profileImage = profileImage;
+        this.isDeleted = isDeleted;
+        this.likeCount = likeCount;
+    }
+    //toStringオーバーライドメソッドの作成
+    @Override
+    public String toString() {
+    	return "User [id="+id+", name="+name+",email="+email+",role="+role+"]";
+    	
+    }
 	
 	
 	
@@ -165,6 +187,12 @@ public class User {
 	}
 	public void setIsDeleted(int isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+	public int getLikeCount() {
+		return likeCount;
+	}
+	public void setLikeCount(int likeCount) {
+		this.likeCount = likeCount;
 	}
 	
 }

@@ -1,12 +1,13 @@
-<%@ page language="java" contentType="text/html ; charset=UTF-8 " pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>ログイン | My portfolio </title>
-
-
-</head>
+    <meta charset="UTF-8">
+    <title>お問合せ詳細</title>
+    </head>
+<body>	
 <style>
 	/*ボックスサイズ*/
 *{box-sizing:border-box;}
@@ -16,7 +17,7 @@
 .item{width:100%;}
 }
 h2{
-color: rgb(0, 0, 0);
+color: rgb(255, 255, 0);
 border-bottom:2px solid rgb(255, 255, 128);
 padding-bottom:10px;
 margin-bottom:25px;
@@ -32,15 +33,14 @@ body{
 	}
 /*コンテナ*/
 .form-container , .container{
-	background:rgb(255, 255, 255);
-	max-width:1000px;
+	background:rgb(128, 128, 255);
+	max-width:600px;
 	margin:40px auto;
 	padding:30px;
 	border-radius:12px;
 	/*上下０左右４へ15影をつける　rgba色と透明度(000)は黒 0.05は透明度５％*/
 	box-shadow:0 4px 15px rgba(0,0,0,0.05);
 }
-
 /*入力フォーム*/
 .form-group{margin-bottom:20px;}
 label{display:block; font-weight: bold; margin-bottom:8px;}
@@ -77,42 +77,36 @@ background-color:rgb(0, 128, 255);
 	display:block;
 	text-align:center;
 	margin-top:20px;
-	color:rgb(0, 0, 255);
+	color:rgb(255, 255, 0);
 	text-decoration:none;
 }
 .back-link:hover{
 	text-decoration: underline;
 }
-</style>
-<body>
-	<div class="form-container">
-		<div class="header">
-			<h2>ログイン</h2>
-		</div>
-			
-<%--エラーメッセージの表示（登録画面と同じ仕組み） --%>
-	<%
-	 String error = request.getParameter("error");
-	if("1".equals(error)){	
-	%>	
-	<p style="color:red;">メールアドレスまたはパスワードが違います</p>
-	<%
-	}
-	%>
-	<form  action="../login" method="post">
-		<div class="form-group">
-			<label for="email">メールアドレス:</label>
-			<input type="email" id="email" name="email" required>
-	</div>
-		<div class="form-group">
-			<label for="password" >パスワード:</label>
-			<input type="password" id="password" name="password" required>
-		</div>
+table{width:100%; min-width:500px; border-collapse:collapse; margin-top: 20px;}
+th,td{border:1px solid rgb(0,255,128); padding: 10px; text-align:left; }
+th {background-color:rgb(255,255,128);}
 	
-	<button class="btn-submit" type="submit">ログイン</button>
-	</form>
-
- <p><a class="back-link" href="register.jsp">新規登録はこちら</a></p>
-</div> 
+</style>
+<div class="container">
+<h2 class="header">お問い合わせ詳細</h2>
+<%--category(数字) ではなく getcategoryName(contact.java)カスタムゲッター を使う --%>
+<p>カテゴリー：${contact.categoryName}</p>
+<%-- getformattedBody(改行反映)のカスタムゲッターを使用 --%>
+<p>本文：<br>
+	<span>${contact.formattedBody}</span>
+	</p>
+<form class="form-group" action="contact" method="post">
+	<input type="hidden" name="id" value="${contact.id}">
+	
+	<label>ステータス></label>
+	<select name="status">
+		<option value="0" ${contact.status == 0 ?'selected' : ''}>未対応</option>
+		<option value="1" ${contact.status == 1 ?'selected' : ''}>対応中</option>
+		<option value="2" ${contact.status == 2 ?'selected' : ''}>対応済み</option> 
+	</select>
+	
+	<button class="btn-submit" type="submit">更新</button>
+</form>
 </body>
 </html>

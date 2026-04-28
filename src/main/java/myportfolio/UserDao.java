@@ -93,7 +93,7 @@ public class UserDao {
 		//空の「名簿リスト」を用意
 		List<User> userList = new ArrayList<>();
 		
-		String sql = "SELECT * FROM users WHERE is_deleted = 0";
+		String sql = "SELECT * FROM users WHERE is_deleted = 0 ORDER BY id DESC" ;
 
 		try (Connection con = DriverManager.getConnection(JDBC_URL, USER, PASS);
 				PreparedStatement ps = con.prepareStatement(sql);
@@ -112,7 +112,8 @@ public class UserDao {
 						        rs.getInt("age"),
 						        rs.getString("bio"),
 						        rs.getString("profile_image"),
-						        rs.getInt("is_deleted"));
+						        rs.getInt("is_deleted")
+								);
 						
 						// Userオブジェクトをリストに追加
 						userList.add(user);}
@@ -147,7 +148,7 @@ public class UserDao {
 	
 
 	//===============================================
-	//ログイン画面よりアクセスしたときのDBへemailとpasswordを探すそして見つかればセットする
+	//ログイン画面よりアクセスしたときのDBへemailとpasswordを探すそして見つかれば全情報取得する
 	//===============================================
 	public User findUser(String email , String password) {
 		User user = null;
@@ -162,10 +163,20 @@ public class UserDao {
 			try(ResultSet rs = ps.executeQuery()){
 				if(rs.next()) {
 					//見つかったら、そのデータでUserオブジェクトを作る
+					//全情報の取得
 					user = new User();
 					user.setId(rs.getInt("id"));
 					user.setEmail(rs.getString("email"));
 					user.setName(rs.getString("name"));
+					//追加
+					user.setPassword(rs.getString("password"));
+					user.setRole(rs.getInt("Role"));
+					user.setGender(rs.getString("gender"));
+					user.setAge(rs.getInt("age"));
+					user.setBio(rs.getString("bio"));
+					user.setProfileImage(rs.getString("profileImage"));
+					user.setIsDeleted(rs.getInt("isDaleted"));
+					
 				}
 			}
 		}catch (SQLException e) {
@@ -175,12 +186,15 @@ public class UserDao {
 	}
 	
 	//===============================================
-	//1人のIDの全情報を取得するメソッド作成(findById)
+	//1人のID情報より全情報を取得するメソッド作成(findById)
 	//===============================================
 	public User findById(int ids) {
 		User user = null;
-		
-		String sql = "SELECT * FROM users WHERE id =?";
+		//サブクエリを使ってlikeCount計算 ＋ID検索で全情報取得
+		String sql = "SELECT u.*,"
+				+ "(SELECT COUNT(*) "
+				+ "FROM likes AS l WHERE l.to_user_id =u.id)AS like_count "
+				+ "FROM users AS u WHERE u.id =?";
 		
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps =con.prepareStatement(sql)){
@@ -202,7 +216,8 @@ public class UserDao {
 		                    rs.getInt("age"),
 		                    rs.getString("bio"),
 		                    rs.getString("profile_image"),
-		                    rs.getInt("is_deleted")
+		                    rs.getInt("is_deleted"),
+		                    rs.getInt("like_Count")
 							);
 					System.out.println(id +"DBより全情報を取得しました");
 					}
@@ -438,5 +453,167 @@ public class UserDao {
 				e.printStackTrace();
 			}
 			return isSuccess;
+		}
+	//===============================================
+	//月間いいねランキング（今月）のtop10を習得する
+	//===============================================
+		public List<User> getMonthlyRanking() {
+		List<User>	rankingList = new ArrayList<>();
+		//SQL文 users  とlikes合体　今月のデータに絞り込みwhere ユーザーごとに束ねるgroup by いいね多い順にDesc
+		String sql ="SELECT u.id, u.name, COUNT(l.id) AS like_count " +
+                "FROM users u " +
+                "JOIN likes l ON u.id = l.to_user_id " +
+                "WHERE l.created_at >= DATE_FORMAT(NOW(), '%Y-%m-01') " +
+                "GROUP BY u.id, u.name " +
+                "ORDER BY like_count DESC LIMIT 10";
+		//接続して１つ１つ取り出しセットする(いいねIDカウント)
+		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps =con.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()){
+				while (rs.next()) {
+					User user = new User();
+					user.setId(rs.getInt("id"));      
+				    user.setName(rs.getString("name"));
+					//UserクラスにlikeCountというフィールドが必要
+					user.setLikeCount(rs.getInt("like_count"));
+					
+					rankingList.add(user);
+				}
+		}catch (SQLException e) {
+			System.out.println("ランキング取得中にエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return rankingList;
+		}
+		//===============================================
+		//生存ユーザー数を表示するメソッド（is_daleted=0）の総数を抽出
+		//===============================================
+		public int countActive() {
+		    int count = 0;
+		    // 削除されていない人だけを数える
+		    String sql = "SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0";
+
+		    try (Connection con = DriverManager.getConnection(JDBC_URL, USER, PASS);
+		         PreparedStatement pstmt = con.prepareStatement(sql);
+		         ResultSet rs = pstmt.executeQuery()) {
+
+		        if (rs.next()) {
+		            count = rs.getInt("count");
+		        }
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+		    return count;
+		}
+		//===============================================
+		//年間いいねランキング（今月）のtop10を習得する
+		//===============================================
+		public List<User> YearlyRanking () {
+			//SQL文
+			//SQL文 users  とlikes合体　年間のデータに絞り込みwhere ユーザーごとに束ねるgroup by いいね多い順にDesc
+			String sql = "SELECT u.id , u.name ,COUNT(l.id) AS like_count "
+					+ "FROM users AS u "
+					+ "JOIN like AS l ON u.id = l.to_user_id "
+					+ "WHERE l.create_at >= DATE_FORMAT(NOW() , '%Y-01-01') "
+					+ "GROUP BY u.id , u.name "
+					+ "ORDER BY like_count DESC LIMIT 10";
+			//リストの作成
+				List<User> yearRankingList = new ArrayList<>();
+			//接続して１つ１つ取り出して格納
+			try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+					PreparedStatement ps = con.prepareStatement(sql);
+					ResultSet rs = ps.executeQuery()){
+				//while文にて取り出す
+				while(rs.next()) {
+					User user = new User();
+					user.setId(rs.getInt("id"));
+					user.setName(rs.getString("name"));
+					//UserクラスにlikeCountというフィールドが必要
+					user.setLikeCount(rs.getInt("like_count"));
+					
+					yearRankingList.add(user);
+				}
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return yearRankingList;
+		}
+		//===============================================
+		//指定ユーザー（自分の）今月と年間のいいね数の取得
+		//===============================================
+		public int countLikesByPeriod(int userId ,String period) {
+			int count = 0;
+			//基本のSQL（ユーザーのいいね数を数える）
+			String sql ="SELECT COUNT(*) FROM likes "
+					+ "WHERE to_user_id = ?";
+			//月間か年間かで条件を付け足す
+			if ("monthly".equals(period)) {
+				sql +=" AND created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')";
+				
+			}else if ("yearly".equals(period)) {
+				sql +=" AND created_at >= DATE_FORMAT(NOW(),'%Y-01-01')";
+			}
+			//DM接続とpsセット
+			try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
+				PreparedStatement ps =con.prepareStatement(sql)){
+				
+				ps.setInt(1, userId);
+				
+				try(ResultSet rs =ps.executeQuery()){
+					if(rs.next()) {
+						//columnの１行目（カウントを取得）
+						count =rs.getInt(1);
+					}
+				}
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+			return count;
+		}
+		
+		//===============================================
+		//AccountSettingServletで使うアップデート（メール、パスワード）パスワード空の時、メールのみ更新メソッド
+		//===============================================
+		/*ユーザー情報の更新（メールアドレス、パスワード）
+		 * @param id ユーザーID
+		 * @param email 新しいメールアドレス
+		 * @param password　新しいパスワード（空の場合は更新しない）
+		 * @return 成功ならtrue 
+		 * */
+		public boolean updateAccount(int id , String email, String password ) {
+			boolean result =false;
+			//パスワードが入力されているかどうかSQlに分岐
+			boolean isPasswordUpdate = (password != null && !password.isEmpty());
+			
+			String sql;
+			if(isPasswordUpdate) {
+				//パスワードも更新する場合
+				sql ="UPDATE users SET email = ? , password = ? WHERE id=? ";	
+			}else {
+				//メアドのみ更新する場合
+				sql ="UPDATE users SET email = ? WHERE id=?";
+			}
+			//DB接続
+			try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
+					PreparedStatement ps = con.prepareStatement(sql)){
+					//psセット
+			if(isPasswordUpdate) {
+				ps.setString(1,email);
+				ps.setString(2,password);
+				ps.setInt(3,id);
+			}else {
+				ps.setString(1,email);
+				ps.setInt(2,id);
+			}
+			
+			int rs = ps.executeUpdate();
+			if(rs > 0) {
+				result = true;
+			}
+				
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+			return result;
 		}
 }
