@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html ; charset=UTF-8 " pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,8 +45,8 @@ body{
 /*入力フォーム*/
 .form-group{margin-bottom:20px;}
 label{display:block; font-weight: bold; margin-bottom:8px;}
-input[type="text"]{
-	width:100px;
+input[type="text"],[type="email"],[type="password"]{
+	width:500px;
 	padding:12px;
 	border:1px solid rgb(0, 255, 255);
 	border-radius:6px;
@@ -99,10 +100,10 @@ background-color:rgb(0, 128, 255);
 	<%
 	}
 	%>
-	<form  action="../login" method="post">
+	<form  action="${pageContext.request.contextPath}/login" method="post">
 		<div class="form-group">
 			<label for="email">メールアドレス:</label>
-			<input type="email" id="email" name="email" required>
+			<input type="email" id="email" name="email" value="${fn:escapeXml(email)}"  required >
 	</div>
 		<div class="form-group">
 			<label for="password" >パスワード:</label>
@@ -111,7 +112,12 @@ background-color:rgb(0, 128, 255);
 	
 	<button class="btn-submit" type="submit">ログイン</button>
 	</form>
-
+<p>まずは雰囲気を知りたい方はこちら↓</p>
+<a href="${pageContext.request.contextPath}/like">公開アカウント一覧を見る</a><br>
+<p>いいねランキングはこちら↓</p>
+ <a href="${pageContext.request.contextPath}/Ranking">いいねランキングを見る</a><br>
+ <p>お問い合わせはこちら↓</p>
+ <a href="${pageContext.request.contextPath}/contact?action=new">お問い合わせ</a><br>
  <p><a class="back-link" href="register.jsp">新規登録はこちら</a></p>
 </div> 
 </body>

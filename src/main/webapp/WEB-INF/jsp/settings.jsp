@@ -23,16 +23,16 @@
 	input[type="email"],input[type="password"]{
 		width:100%; padding:12px; border:1px solid rgb(192, 192, 192); border-radius:4px; font-size:16px;
 	}
-	.error-list{color:rgb(255, 0, 0); background:rgb(128, 128, 255); padding:15px; border-radius: 4px; margin-bottom:20px; list-style:none;}
+	.error-list{color:rgb(255, 0, 0); padding:15px; border-radius: 4px; margin-bottom:20px; list-style:none;}
 	.error-list li {font-size:14px; margin-bottom:5px;}
 	
 	.btn-submit{
 		width:100%; padding:12px; background:rgb(100,100,100); color:rgb(255, 255, 0);border:none; border-radius:4px; cursor:pointer; font-size:16px; transition:0.3s;
 	}
-	.btn-submit:hover{background:#555;}
+	.btn-submit:hover{background:rgb(192, 192, 192);}
 	
-	.back-link{display:block; text-align:center; margin-top:20px; color: #666; text-decoration:none;}
-	.back-link:hover{text-decoration:underline;}
+	.back-link{display:block; text-align:center; margin-top:20px; color: rgb(128, 64, 0); text-decoration:none;}
+	.back-link:hover{background:rgb(255, 128, 0);text-decoration:underline;}
 	
 	
 </style>

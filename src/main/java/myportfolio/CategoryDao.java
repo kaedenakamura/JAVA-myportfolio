@@ -19,13 +19,12 @@ public class CategoryDao {
 	//===============================================-
 	//insertメソッドにてデータの追加を行うクラスを作成。
 	//===============================================-
-	public void insert(String group , String name) {
-		String sql ="INSERT INTO category(category_group,name) VALUES (?,?)";
+	public void insert(String group) {
+		String sql ="INSERT INTO category(category_group) VALUES (?)";
 		
 		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps =con.prepareStatement(sql)){
 			ps.setString(1,group );
-			ps.setString(2, name);
 			ps.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -42,7 +41,7 @@ public class CategoryDao {
 	public List<Category> findAll(){
 		List<Category> list = new ArrayList<>();
 		
-		String sql = "SELECT * FROM category ORDER BY id ASC";
+		String sql = "SELECT id, category_group FROM category ";
 
 		try (Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps =con.prepareStatement(sql);
@@ -51,8 +50,7 @@ public class CategoryDao {
 			while (rs.next()) {
 				Category c =new Category(
 						rs.getInt("id"),
-						rs.getString("category_group"),
-						rs.getString("name")
+						rs.getString("category_group")
 						);
 				list.add(c);
 			}
@@ -96,8 +94,7 @@ public class CategoryDao {
 				if(rs.next()) {
 					category = new Category(
 						 rs.getInt("id"),
-						 rs.getString("category_group"),
-						 rs.getString("name"));
+						 rs.getString("category_group"));
 				 System.out.println(id + "DBよりカテゴリー情報を取得しました");
 				}
 			}catch (SQLException e) {
@@ -119,13 +116,13 @@ public class CategoryDao {
 	//カテゴリーの更新(UPDATE)
 	//===============================================
 	public boolean update(Category category) {
-		String spl = "UPDATE category SET name =? WHERE id = ?";
+		String spl = "UPDATE category SET category_Group =? WHERE id = ?";
 		boolean isSuccess =false;
 		
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps =con.prepareStatement(spl);){
 			//SQLの「？」へセット
-			ps.setString(1,category.getName());
+			ps.setString(1,category.getCategoryGroup());
 			ps.setInt(2,category.getId());
 			
 			int result =ps.executeUpdate();
@@ -138,6 +135,6 @@ public class CategoryDao {
 			}
 		return isSuccess;
 		}
-		
 	}
+
 

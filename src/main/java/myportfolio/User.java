@@ -15,13 +15,17 @@ public class User {
     private String bio;
     private String profileImage;
     private int isDeleted;
+    //like機能
     private int likeCount;
     
+    //非同期処理の為の一時的なlike格納
+    private boolean isLiked;
     
     // デフォルトコンストラクタ
     public User() {
-		// コンストラクターなし
-	}
+    	//コンストラクターなし
+    }
+    
 	public  User(String name, String email, String password) {
         this.email = email;
         this.password = password;
@@ -51,7 +55,7 @@ public class User {
 	     this.name = name;
 	     this.setRuby(ruby) ;
 	}
-	// 全項目入りのコンストラクタ(DAO用)
+	// 全項目入りのコンストラクタ(DAO用)update servlet ProfileEdit servlet
     public User(int id, String name, String email, String password, int role, 
                 String ruby, String gender, int age, String bio, String profileImage) {
         this.id = id;
@@ -96,13 +100,13 @@ public class User {
         this.isDeleted = isDeleted;
         this.likeCount = likeCount;
     }
+
     //toStringオーバーライドメソッドの作成
     @Override
     public String toString() {
     	return "User [id="+id+", name="+name+",email="+email+",role="+role+"]";
     	
     }
-	
 	
 	
 	public int getId() {
@@ -194,7 +198,13 @@ public class User {
 	public void setLikeCount(int likeCount) {
 		this.likeCount = likeCount;
 	}
-	
-}
 
+	public boolean isLiked() {
+		return isLiked;
+	}
+
+	public void setLiked(boolean isLiked) {
+		this.isLiked = isLiked;
+	}
+}
 

@@ -20,6 +20,11 @@ public class ContactServlet extends HttpServlet{
 		ContactDao dao = new ContactDao();
 		//ダッシュボードより新規お問合せ(new)とactionが一致しているときcontactFormへ飛ばす<a>タグ処理
 		if("new".equals(action)) {
+			//カテゴリー一覧を取得してリクエストにセット
+			CategoryDao categoryDao = new CategoryDao();
+			List<Category> categoryList = categoryDao.findAll();
+			request.setAttribute("categoryList",categoryList);
+			System.out.println("カテゴリーチェック"+categoryList);
 			//WEB-INF内なのでdispatcher(内側)で呼び出す/sendRedirectは外部から
 			request.getRequestDispatcher("/WEB-INF/jsp/contactForm.jsp")
 			.forward(request, response);
@@ -38,16 +43,17 @@ public class ContactServlet extends HttpServlet{
 			.forward(request,response);
 			return;
 		//お問い合わせ一覧(dashboard.jsp)より押されたとき処理&戻るボタンなど上記に該当しない場合
-		}else {
+		}
+		
 			//お問い合わせの情報がが一致していないとき一覧を返す
 			List<Contact> list = dao.findAll();
-			request.setAttribute("contactList", list);
+			request.setAttribute("categoryList", list);
+			System.out.println("カテゴリーグループ"+list);
 			request.getRequestDispatcher("/WEB-INF/jsp/contactList.jsp")
 			.forward(request,response);
 			return;
 		}
 		
-	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException , IOException{
@@ -61,15 +67,19 @@ public class ContactServlet extends HttpServlet{
 	    if("insert".equals(action)) {
 	    	//jspよりデータの回収
 	    	String name =request.getParameter("name");
+	    	String email = request.getParameter("email");
 	    	String category =request.getParameter("category");
 	    	String body =request.getParameter("body");
 	    	//ガード
 	    	if(name !=null && !name.isEmpty() && body !=null && !body.isEmpty()) {
 	    		//Dao呼び出しセット
-	    		Contact newContact = new Contact(name,category,body);
+	    		Contact newContact = new Contact(name,email,category,body);
 	    		
 	    		//Daoinsertめどっど起動
 	    		dao.insert(newContact);		
+	    		
+	    		//メール送信
+	    		EmailSender.sendContactEmail(newContact);
 	    	}
 	    	}else if(idStr !=null && statusStr != null) {
 					//Idとstatusをjspより取得してupdateStatusメソッドにてＤＢへ格納

@@ -77,7 +77,7 @@ public class AccountSettingsServlet extends HttpServlet{
 				
 				if(isSuccess) {
 					loginUser.setEmail(email);
-					session.setAttribute("user",loginUser);
+					session.setAttribute("LoginUser",loginUser);
 					//成功したらマイページへ
 					response.sendRedirect(request.getContextPath()+"/userMyPage?success=true");
 				}else {

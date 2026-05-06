@@ -168,7 +168,7 @@ body{
     	 <p><a href="${pageContext.request.contextPath}/deletedList">ユーザー削除済一覧へ</a></p>
     	 </div>
     	 <p><a href="${pageContext.request.contextPath}/html/register.jsp">新規登録画面へ戻る</a></p>
-    	 <p><a href="${pageContext.request.contextPath}/html/login.jsp">ログイン画面へ</a></p>
+    	 <p><a href="${pageContext.request.contextPath}/dashboard">ダッシュボードへ戻る</a></p>
     </div>
     	 	
     	 <script>

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%--register.jsp--%>
 <!DOCTYPE html>
 <html>
@@ -23,7 +24,7 @@
 	//URLのerror=2 を受け取る
 	}else if ("2".equals(error)){
 	%>
-	<p>メールアドレスもしくは名前を225文字以下で設定してください</p>
+	<p>メールアドレスもしくは名前(ふりがな)を225文字以下で設定してください</p>
 	<%
 	//URLのerror=3 を受け取る
 	}else if ("3".equals(error)){
@@ -53,9 +54,13 @@
 	}else if("8".equals(error)){%>
 	<p style="color:red;"> 性別を男性もしくは女性を選んでください</p>
 	<% 
-	//URLのerror8を受け取る
+	//URLのerror9を受け取る
 	}else if("9".equals(error)){%>
 	<p style="color:red;">プロフィール画像の容量を２MB以内で収めてください</p>
+	<% 
+	//追加：URLのerror10を受け取る
+	}else if("10".equals(error)){%>
+	<p style="color:red;">メールアドレスの形式が違います。</p>
 	<%
 	}
 	%>
@@ -103,18 +108,13 @@ table {
 }
 /*入力フォーム*/
 .form-group{margin-bottom:20px;}
-label{font-weight: bold; margin-bottom:8px;}
-input[type="text"]{
-	margin-bottom:20px;
-	width:300px;
-	padding:12px;
-	border:1px solid rgb(0, 255, 255);
-	border-radius:6px;
-	transition:border-color 0.3s;
-	}
-input[type="text"]:focus{
-	border-color:rgb(0, 128, 255);
-	outline: none;
+label{font-weight:bold; display:block; margin-top:15px;}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea, select{
+width:100%; padding:10px; margin-top:5px; border:1px solid rgb(192, 192, 192);
+ border-radius:4px; box-sizing:border-box;
 }
 /*ボタン（青系）*/
 .btn-submit{
@@ -146,47 +146,46 @@ background-color:rgb(0, 128, 255);
 }	
 </style>
 <%--画像ファイルやファイルが含まれるバイナリーデータの場合、エンクタイプ（エンコードタイプ）設定"multipart/form-data"--%>
-	<form class="form-group" action="../register" method="post" enctype="multipart/form-data">
+	<form class="form-group" action="${pageContext.request.contextPath}/register" method="post" enctype="multipart/form-data">
 		<div>
 		<label>権限</label>
 		<%--現在のロールに合わせてcheckedを切り替える --%>
-		<input type="radio" name="role" id="role_admin" value="1" onclick="toggleFields()" ${user.role == 1 ? 'checked' : ""}>
+		<input type="radio" name="role" id="role_admin" value="1" onclick="toggleFields()" ${user.role == 1 ? 'checked' : ""} <label for="role_admin">管理者</label>
 		<label for="role_admin">管理者</label>
-		<input type="radio" name="role"id="role_general" value="0" onclick="toggleFields()" ${user.role == 0 ? 'checked' : ""}>
-		<label for="role_general">一般</label>
+		<input type="radio" name="role"id="role_general" value="0" onclick="toggleFields()" ${user.role == 0 ? 'checked' : ""} <label for="role_general">一般</label>
 		</div>
 		<%--一般ユーザーの時だけ見せたい項目--%>
 		<div id="general-fields" style="display:none;">
 		<p>
             <label for="ruby">ふりがな：</label>
-			<input type="text" name="ruby" id="ruby">
+			<input type="text" name="ruby" id="ruby" value="${fn:escapeXml(ruby)}">
 		</p>
 		<p>
            	<label>性別:</label>
-			<input type="radio" name="gender" value="male"id="male" ><label for="male">男</label>
-			<input type="radio" name="gender" value="female" id="female"><label for="female">女</label>
+			<input type="radio" name="gender" value="male"id="male" ${gender == 'male' ? 'checked' : ''}  <label for="male"> 男</label>
+			<input type="radio" name="gender" value="female" id="female" ${gender == 'female' ? 'checked' : ''} <label for="female"> 女</label>
 		</p>
 		<label for="age">年齢:</label>
-		<input type="number" name="age"min="0" max="999" id="age"><br>
+		<input type="number" name="age"min="0" max="999" id="age" value="${fn:escapeXml(age)}"><br>
 		<label for="bio">自己紹介:</label>
-		<textarea name="bio"id="bio" maxlength="1500" ></textarea><br>
-		<label for="profileImage">プロフィール画像URL</label>
+		<textarea name="bio"id="bio" maxlength="1500"  >${fn:escapeXml(bio)}</textarea><br>
+		<label for="profileImage" >プロフィール画像を選択</label>
 		<input type="file" id="profileImage" name="profileImage" ><br>
 		</div>
 	<%--共通項目--%>
 	<p>	
 		<label for="name" class="common-label">名前:</label>
-		<input type="text"id="name" name="name" placeholder="名前">
+		<input type="text"id="name" name="name" placeholder="名前" value="${fn:escapeXml(name)}">
 	</p>
 	<p>
 		<label for="email" class="common-label">メールアドレス:</label>
-		<input type="email"id="email" name="email" placeholder="メールアドレス">
+		<input type="email"id="email" name="email" placeholder="メールアドレス" value="${fn:escapeXml(email)}">
 	</p>
 	<p>
 		<label for="password" class="common-label">パスワード:</label>
-		<input type="password"id="password" name="password" placeholder="パスワード">
+		<input type="password"id="password" name="password" placeholder="パスワード" value="password">
 	</p>
-	<button type="submit">登録する</button>
+	<button type="btn-submit">登録する</button>
 	</form>
 <div>
 	<a class="btn-submit" href="../list">ユーザー一覧へ</a>
@@ -194,6 +193,7 @@ background-color:rgb(0, 128, 255);
 <div>
 	<a class="back-link" href="login.jsp">ログイン画面へ</a>
 </div>
+
 </div>
 	
 	

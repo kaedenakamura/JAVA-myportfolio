@@ -10,7 +10,7 @@
 /*ボックスサイズ*/
 *{box-sizing:border-box;}
 /*画面幅が768以下（スマホ・タブレット）になったら適応 ヘッダーの高さを低くする*/
-@media screen and (max-width:768){
+@media screen and (max-width:768px){
 .header{height:60px;}
 .item{width:100%;}
 }
@@ -105,17 +105,9 @@ background-color:rgb(0, 128, 255);
 	<input type="hidden" name="action" value="insert">
 	
 	<div class="form-group">
-        <label for="category">お問い合わせカテゴリー</label>
-        <select id="category" name="category_group" required>
-            <option value="">選択してください</option>
-            <option value="機能について">機能について</option>
-            <option value="不具合報告">不具合報告</option>
-            <option value="その他">その他</option>
-        </select>
+        <label for="categoryGroup">新規カテゴリーグループ名</label>
+        <input type="text" id="categoryGroup" name="categoryGroup" placeholder="例：不具合報告" required>
     </div>
-	
-	<label for="name">詳細名</label>
-	<input type="text" id="name" name="name" placeholder="例：操作方法">
 	
 	<button type="submit" class="btn-submit">登録する</button>
 	</form>

@@ -3,6 +3,7 @@ package myportfolio;
 public class Contact {
 	private int id ;
 	private String name;
+	private String email;
 	private String category;
 	private String body;
 	private int status; //0未対応、1対応中、２対応済み
@@ -11,21 +12,24 @@ public class Contact {
 	
 	//コンストラクター
 	public Contact() {}
-	public Contact(int id,String name, String category, String body, int status) {
+	public Contact(int id,String name, String email,String category, String body, int status) {
 		this.setId(id);
 		this.setName(name);
+		this.setEmail(email);
         this.setCategory(category);
         this.setBody(body);
         this.setStatus(status);
 	}
 	//コンストラクター
-	public Contact(String name,String category, String body) {
+	public Contact(String name,String email , String category, String body) {
 		this.name = name;
+		this.email=email;
 		this.category =category;
 		this.body = body;
 		this.status = 0;
 		
 	}
+	
 	//toStringオーバーライドメソッドの作成
 	@Override
 	public String toString() {
@@ -59,15 +63,11 @@ public class Contact {
 	
 	//getcategory nameメソッドの呼び出し
 	public String getCategoryName() {
-		// categoryは現在の数字String型の１などもらう
-		if("1".equals(this.category)) {
-			return "機能について";
-		}else if ("2".equals(this.category)) {
-			return "不具合報告";
-		}else if ("3".equals(this.category)) {
-			return "その他";
-		}
-		return "未分類";
+		// categoryをDBリストからここに格納するカスタムゲッター
+		CategoryDao categoryDao = new CategoryDao();
+		int id = Integer.parseInt(this.category);
+		Category cat =categoryDao.findById(id);
+		return (cat !=null) ? cat.getCategoryGroup() : "不明";
 	}
 	//getStatusメソッドの作成
 	public String getStatusName() {
@@ -144,5 +144,11 @@ public class Contact {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
 }

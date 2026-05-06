@@ -55,15 +55,14 @@ protected void doPost(HttpServletRequest request ,HttpServletResponse response)
 		String action = request.getParameter("action");
 		CategoryDao dao =new CategoryDao();
 		
-		//フォームからcategory_group とnameの両方を受け取る
+		//フォームからcategory_groupを受け取る
 		String categoryGroup =request.getParameter("category_group");
-		String name = request.getParameter("name");
 		
 		if("update".equals(action)) {
 		//更新処理,画面から送られてきたIDと新しい名前を取得
 		int id  = Integer.parseInt(request.getParameter("id"));
 		//名前のバリデーション
-		if(categoryGroup == null || categoryGroup.isEmpty() ||name == null || name.isEmpty() || name.length() >255) {
+		if(categoryGroup == null || categoryGroup.isEmpty() ) {
 			HttpSession session = request.getSession();
 			session.setAttribute("errormsg","名前を255文字以内で入力してください");
 			//エラーで下の画面に戻す
@@ -72,7 +71,7 @@ protected void doPost(HttpServletRequest request ,HttpServletResponse response)
 		}
 		
 		//Daoメソッド起動 
-		Category category =new Category(id,categoryGroup,name);
+		Category category =new Category(id,categoryGroup);
 		dao.update(category);
 		//Edit.jspよりPOST
 		//サクセス取得時（更新成功時）カテゴリー一覧へ再び戻る
@@ -80,9 +79,10 @@ protected void doPost(HttpServletRequest request ,HttpServletResponse response)
 		}else {
 			//新規登録(value=insert)処理（action=updateではないとき）
 			//categoryForm.jspよりPOST
-			dao.insert(categoryGroup,name);
+			dao.insert(categoryGroup);
 			response.sendRedirect("category");
 		}
+		
 		}
 		}
 		

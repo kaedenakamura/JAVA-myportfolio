@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 
 @WebServlet("/list")
@@ -17,6 +18,17 @@ public class UserListServlet extends HttpServlet{
 	
 	protected void doGet(HttpServletRequest request , HttpServletResponse response)
                   throws ServletException, IOException {
+		HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("LoginUser");
+
+        // ログインチェック
+        if (loginUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+		
+		
 		//ページ番号の受け取り
 		String pageStr = request.getParameter("page");
 		int page = 1 ;

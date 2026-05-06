@@ -1,4 +1,6 @@
 <%@page language="java" contentType="text/html ; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE>
 <html>
 <head>
@@ -97,14 +99,20 @@ background-color: rgb(0,128,255);
 	<input type="text" name="name" id="name" required placeholder="名前">
 	</div>
 	<div class="form-group">
+	<label for="name">メールアドレス</label>
+	<input type="email" id="email" name="email" required placeholder="example@mail.com">
+	</div>
+	<div class="form-group">
 	<label for="category">問合せカテゴリー</label>
 	<select id="category" name="category" required>
 		<option value="">選択してください</option>
-		<option value="1">機能について</option>
-		<option value="2">不具合報告</option>
-		<option value="3">その他</option>
+		<%--サーブレットから届いたリストを回す--%>
+		<c:forEach var="cat" items="${categoryList}">
+			<option value="${cat.id}">${cat.categoryGroup}</option>
+		</c:forEach>
 	</select>
 	</div>
+	
 	<div class="form-group">
 	<label for="body">お問合せ内容</label>
 	<textarea name="body" id="body" rows="10" required ></textarea>
@@ -112,7 +120,7 @@ background-color: rgb(0,128,255);
 	<button type="submit" class="btn-submit">送信する</button>
 	</div>
 	</form>
-	<a class="back-link" href="${pageContext.request.contextPath}/contact">お問合せ一覧へ戻る</a>
+	<a class="back-link" href="${pageContext.request.contextPath}/login">ログイン画面に戻る</a>
 </div>
 </body>
 </html>

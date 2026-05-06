@@ -127,13 +127,25 @@ public class UpdateServlet extends HttpServlet {
 			response.sendRedirect("update?id=" +id);
 			return;
 		}
-		// もし画像が選ばれていなければ、DBには現在の画像名を保存する
-		if (profileImage == null || profileImage.isEmpty()) {
-		    profileImage = dao.findById(id).getProfileImage();
-		    
+		//もし画像が選ばれていなければ、DBには現在の画像名を保存する
+		if(profileImage == null || profileImage.isEmpty()) {
+			profileImage = dao.findById(id).getProfileImage();
+		//画像がある時は、webapp→uploadsへセット
+		}else {
+			String uploadPath = getServletContext().getRealPath("/")+"uploads";
+			
+			//もしフォルダが存在しない場合に作成
+			java.io.File uploadDir =new java.io.File(uploadPath);
+			if(!uploadDir.exists()) {
+				uploadDir.mkdir();
+			}
+			//フォルダにファイルを書き込む
+			// File.separator は Windowsの "\" や Mac/Linuxの "/" を自動で判別してくれる便利なやつ
+			filePart.write(uploadPath + java.io.File.separator + profileImage);
+			System.out.println("画像を保存しました: " + uploadPath 
+								+ java.io.File.separator + profileImage);
 		}
-		
-		
+
 		
 		
 		//オブジェクトへ（インスタンス化）

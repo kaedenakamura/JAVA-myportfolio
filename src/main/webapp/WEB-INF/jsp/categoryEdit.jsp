@@ -87,9 +87,9 @@ background-color:rgb(0, 128, 255);
 <div class="form-container">
 <% //エラーメッセージあれば表示
 	String errorMsg =(String)session.getAttribute("errormsg");
-	if(error != null){
+	if(errorMsg != null){
 %>	
-	<p style="cokor:red"><%= errormsg %></p>
+	<p style="color:red"><%= errormsg %></p>
 <% 
 	//表示したらセッション削除
 	session.removeAttribute("errormsg");
@@ -112,13 +112,13 @@ background-color:rgb(0, 128, 255);
 	
 	<%--誰を更新するのかを伝えるhidden→update,id --%>
 	<input type="hidden" name="action" value="update">
-	S
+	
 	<input type="hidden" name="id" value="<%=cat.getId()%>">
 	
 	<div class="form-group">
-		<label for="name">カテゴリー名</label>
+		<label for="category">カテゴリー名</label>
 		<%--現在の値を初期値として表示--%>
-		<input type="text" id="name" name="name" value="<%=cat.getId()%>" required>
+		<input type="text" id="category" name="category_group" value="<%=cat.getCategoryGroup()%>" required>
 	</div>
 	
 	<button class="btn-submit" type="submit" class="btn-submit">更新する</button>

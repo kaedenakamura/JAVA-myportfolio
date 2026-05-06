@@ -53,28 +53,36 @@ public class UserServlet extends HttpServlet {
 	if (name == null || name.isEmpty() || email == null || email.isEmpty() ||
 			password ==null 
 			) {
-		response.sendRedirect("html/register.jsp?error=1");
+		forwardWithError(request, response, "1", name, ruby, email, ageStr, bio, gender);
 		
 		System.out.println("バリデーションエラー：空のデータがあるため登録を中止します");
 		return;
 			}
 	if (email.length() >=250 || name.length()>=250 || ruby.length()>=250) {
 	//名前、メール、ふりがなrubyが２５０文字以上の場合はerrorを返すバリデーション
-	response.sendRedirect("html/register.jsp?error=2");
+		forwardWithError(request, response, "2", name, ruby, email, ageStr, bio, gender);
 	System.out.println("バリデーションエラー：名前もしくふりがな、メールアドレスが長すぎます");
 	return;
+	}
+	// 追加：メールアドレスの形式チェック（正規表現）
+	// type="text"などの変化にも対応 
+	String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+	if (!email.matches(emailPattern)) {
+		forwardWithError(request, response, "10", name, ruby, email, ageStr, bio, gender); // 追加エラー
+	    System.out.println("バリデーションエラー：メールアドレスの形式が正しくありません -> " + email);
+	    return;
 	}
 	//パスワードが入力されているときだけバリデーションする。nullと空でないとき
 	if(password != null && !password.isEmpty()) {
 		//passwordUtilからisValidPasswordメソッド起動
 		if(!PasswordUtil.isValidPassword(password)) {
-		response.sendRedirect("html/register.jsp?error=3" );
+			forwardWithError(request, response, "3", name, ruby, email, ageStr, bio, gender);
 		return;
 		}
 	}
 	//ふりがながひらがなではないときバリデーションエラー
 	if(!ruby.isEmpty() && !ruby.matches("^[\\u3040-\\u309F]+$")) {
-		response.sendRedirect("html/register.jsp?error=4");
+		forwardWithError(request, response, "4", name, ruby, email, ageStr, bio, gender);
 		System.out.println("バリデーションエラー:ふりがなは「ひらがな」で入力してください");
 		return;
 		
@@ -82,17 +90,17 @@ public class UserServlet extends HttpServlet {
 	//バリデーション追加年齢、自己紹介、性別、画像
 	//年齢チェック
 	if (age < 0 || age> 999) {
-		response.sendRedirect("html/register.jsp?error=6" );
+		forwardWithError(request, response, "6", name, ruby, email, ageStr, bio, gender);
 		return;
 	}
 	//自己紹介チェック
 	if(bio != null && bio.length() >1500) {
-		response.sendRedirect("html/register.jsp?error=7" );
+		forwardWithError(request, response, "7", name, ruby, email, ageStr, bio, gender);
 		return;
 	}
 	//性別のチェック
 	if(gender != null && !(gender.equals("male")|| gender.equals("female"))) {
-		response.sendRedirect("html/register.jsp?error=8" );
+		forwardWithError(request, response, "8", name, ruby, email, ageStr, bio, gender);
 		return;
 	}
 	//プロフィール画像２MB以内バリデーション(1KB=1024B 1M=1024KB)
@@ -102,14 +110,27 @@ public class UserServlet extends HttpServlet {
 	long fileSize =filePart.getSize();
 	//2MBを超えていた時の処理
 	if(fileSize > maxFileSize) {
-		response.sendRedirect("html/register.jsp?error=9");
+		forwardWithError(request, response, "9", name, ruby, email, ageStr, bio, gender);
 		return;
 	}
 	// もし画像が選ばれていなければ、DBにはデフォルト名を保存する
 	if (profileImage == null || profileImage.isEmpty()) {
 	    profileImage = "default_icon.png"; // あらかじめ用意する画像名
+	//画像がある時は、webapp→uploadsへセット
+	}else {
+		String uploadPath = getServletContext().getRealPath("/")+"uploads";
+		
+		//もしフォルダが存在しない場合に作成
+		java.io.File uploadDir =new java.io.File(uploadPath);
+		if(!uploadDir.exists()) {
+			uploadDir.mkdir();
+		}
+		//フォルダにファイルを書き込む
+		// File.separator は Windowsの "\" や Mac/Linuxの "/" を自動で判別してくれる便利なやつ
+		filePart.write(uploadPath + java.io.File.separator + profileImage);
+		System.out.println("画像を保存しました: " + uploadPath 
+							+ java.io.File.separator + profileImage);
 	}
-	
 	
 		
 		// 受け取りチェック
@@ -123,10 +144,10 @@ public class UserServlet extends HttpServlet {
 	    User user = new User(0, name, email, password, role, ruby, gender, age, bio, profileImage);
 		UserDao userDao = new UserDao();
 		
-		//DBのバリデーションチェック
+		//追加：DBのメールアドレス2重バリデーションチェック
 		if (userDao.isEmailExists(email)) {
-			//重複していたらerror=4を返す
-			response.sendRedirect("html/register.jsp?error=5");
+			//重複していたらerror=5を返す
+			forwardWithError(request, response, "5", name, ruby, email, ageStr, bio, gender);
 			return;
 		}
 
@@ -138,6 +159,21 @@ public class UserServlet extends HttpServlet {
 		}
 		}
 	
+	//エラーが発生したときに値（データ）を保持、セットして戻すメソッド
+	private void forwardWithError(HttpServletRequest request , HttpServletResponse response , String errorNum,String name, String ruby , String email , String ageStr ,String bio , String gender)
+			throws ServletException ,IOException{
+		//passwordとprofileImageは含めずセット
+		request.setAttribute("name",name);
+		request.setAttribute("ruby",ruby);
+		request.setAttribute("email",email);
+		request.setAttribute("age",ageStr);
+		request.setAttribute("bio",bio);
+		request.setAttribute("gender",gender);
 	
-	
+	request.getRequestDispatcher("/html/register.jsp?error=" + errorNum).forward(request, response);
 	}
+}
+	
+	
+	
+	

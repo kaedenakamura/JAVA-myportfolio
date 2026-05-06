@@ -34,7 +34,7 @@
 	box-shadow:0 4px 15px rgba(0,0,0,0.05);
 	}
 	/* 5. テーブルのスクロール対応 over-frow(スクロールバー出す)*/
-	.table-container{width:100px; overfrow:auto; -weblit-over-scrolling:touch;
+	.table-container{width:100px; overflow:auto; -webkit-over-scrolling:touch;
 	margin-top:20px;}
 	img{max-width:100%; height:auto;}
 	/*orverflow-x→横方向にはみ出したらスクロールバー出す。webkit→スマホでぬるぬる動かしやすくする*/
@@ -78,15 +78,13 @@ background-color:rgb(0, 128, 255);
 			<table border="1">
 				<tr>
 					<th>ID</th>
-					<th>カテゴリーの種類</th>
-					<th>カテゴリー名</th>
+					<th>カテゴリーグループ</th>
 					<th>操作</th>
 				</tr>
 				<c:forEach var="cat" items="${categoryList}">
 					<tr>
 						<td>${cat.id}</td>
 						<td>${cat.categoryGroup}</td>
-						<td>${cat.name}</td>
 						<td>
 							<a href="category?action=edit&id=${cat.id}">編集</a>
 							<a class="back-link" href="category?action=delete&id=${cat.id}"

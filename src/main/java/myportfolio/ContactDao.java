@@ -44,6 +44,7 @@ public class ContactDao {
 		                Contact c = new Contact(
 		                        rs.getInt("id"),
 		                        rs.getString("name"),
+		                        rs.getString("email"),
 		                        rs.getString("category"),
 		                        rs.getString("body"),
 		                        rs.getInt("status")
@@ -75,6 +76,7 @@ public class ContactDao {
 		                contact = new Contact(
 		                        rs.getInt("id"),
 		                        rs.getString("Name"),
+		                        rs.getString("email"),
 		                        rs.getString("category"),
 		                        rs.getString("body"),
 		                        rs.getInt("status")
@@ -109,16 +111,17 @@ public class ContactDao {
 		 public void insert(Contact contact) {
 			 //SQLの準備:？を使って値を流す
 			 //idはauto_increment,created_at/updated_atはNow()にお任せ
-			 String sql ="INSERT INTO contacts(name,category,body,status,created_at,updated_at)"
-					 	+ "VALUES(?,?,?,?,NOW(),NOW())";
+			 String sql ="INSERT INTO contacts(name,email,category,body,status,created_at,updated_at)"
+					 	+ "VALUES(?,?,?,?,?,NOW(),NOW())";
 			 //try-with-resoursesを使って接続を自動で閉じる
 			 try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
 					 PreparedStatement ps =con.prepareStatement(sql)){
 				 //?に値をセットしていく
 				 ps.setString(1,contact.getName());
-				 ps.setString(2,contact.getCategory());
-				 ps.setString(3,contact.getBody());
-				 ps.setInt(4,contact.getStatus());
+				 ps.setString(2,contact.getEmail());
+				 ps.setString(3,contact.getCategory());
+				 ps.setString(4,contact.getBody());
+				 ps.setInt(5,contact.getStatus());
 				 //実行
 				 int result = ps.executeUpdate();
 				 if(result > 0) {

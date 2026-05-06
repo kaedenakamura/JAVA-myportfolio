@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UserDao {
 	//DB接続に必要な情報を定数として定義
-	private final String JDBC_URL = "jdbc:mysql://localhost:3306/test_db?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Tokyo";
+	private final String JDBC_URL = "jdbc:mysql://localhost:3306/test_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Tokyo";
 	private final String USER     = "root";
 	private final String PASS     = "ROOT";
 	
@@ -506,15 +506,15 @@ public class UserDao {
 		    return count;
 		}
 		//===============================================
-		//年間いいねランキング（今月）のtop10を習得する
+		//年間いいねランキングのtop10を習得する
 		//===============================================
 		public List<User> YearlyRanking () {
 			//SQL文
 			//SQL文 users  とlikes合体　年間のデータに絞り込みwhere ユーザーごとに束ねるgroup by いいね多い順にDesc
 			String sql = "SELECT u.id , u.name ,COUNT(l.id) AS like_count "
 					+ "FROM users AS u "
-					+ "JOIN like AS l ON u.id = l.to_user_id "
-					+ "WHERE l.create_at >= DATE_FORMAT(NOW() , '%Y-01-01') "
+					+ "JOIN likes AS l ON u.id = l.to_user_id "
+					+ "WHERE l.created_at >= DATE_FORMAT(NOW() , '%Y-01-01') "
 					+ "GROUP BY u.id , u.name "
 					+ "ORDER BY like_count DESC LIMIT 10";
 			//リストの作成
