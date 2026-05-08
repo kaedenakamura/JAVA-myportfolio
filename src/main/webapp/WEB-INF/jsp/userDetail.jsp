@@ -8,21 +8,36 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         .profile-card {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 50px auto;
+            overflow:hidden;
             padding: 30px;
             background: #fff;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
         }
+        .profile-header{
+        text-align:center;
+        margin:20px auto;
+        font-size:20px;
+        font-weight:bold;
+        background:rgb(255, 255, 255);}
+        
+		.profile-body{  
+						padding:30px; text-align:center; position:relative;}/*ポジションの基準レイアウト崩れ回避*/
+		.profile-img-large{
+			width: 100%; height:600px; border-radius:20%; border:5px solid white;
+			margin-top:10px;object-fit:cover; background:rgb(255, 255, 255);
+			}
+        
         .bio-box {
-            text-align: left;
+            text-align: center;
             background: #fdfdfd;
             border: 1px solid #eee;
-            padding: 20px;
             border-radius: 10px;
-            margin: 20px 0;
+            margin: 40px 0;
+            padding:20px 0;
             white-space: pre-wrap;
         }
         .like-btn {
@@ -41,9 +56,19 @@
     </style>
 </head>
 <body>
-
     <div class="profile-card">
-        <%-- 【要件：プロフィール情報表示】 --%>
+    <div class="profile-header">プロフィール詳細</div>
+    	<%--プロフィール画像--%>
+	<c:choose>
+		<c:when test="${not empty LoginUser.profileImage}">
+			<img src="${pageContext.request.contextPath}/uploads/${user.profileImage}"
+			         alt="${user.name}の画像" class="profile-img-large">
+		</c:when>
+		<c:otherwise>
+			<div class="profile-img-large" style="display:flex; align-items:center; justify-content:center; margin: auto;">No Image</div>
+		</c:otherwise>
+	</c:choose>
+        <%-- プロフィール情報表示 --%>
         <h1>${user.name}</h1>
         <p>${user.gender == 'male' ? '男性' : '女性'}</p>
         
@@ -53,14 +78,17 @@
 
         <p>現在の獲得数：<strong id="count-${user.id}">${user.likeCount}</strong></p>
 
-        <%-- 【要件：非同期いいねボタン】 --%>
+        <%--非同期いいねボタン--%>
         <button type="button" 
                 class="like-btn ${user.liked ? 'is-active' : ''}" 
                 data-user-id="${user.id}">
             <span class="heart-icon">${user.liked ? '♥' : '♡'}</span>
             <span class="like-label">いいね！</span>
         </button>
-
+        
+        <div style="margin-top: 30px;">
+            <a href="${pageContext.request.contextPath}/Ranking">月のいいねランキング一覧へ戻る</a>
+        </div>
         <div style="margin-top: 30px;">
             <a href="like">一般アカウント紹介一覧に戻る</a>
         </div>
@@ -88,7 +116,7 @@
                 const response = await fetch("${pageContext.request.contextPath}/UserDetail", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: params
+                    body: params.toString()
                 });
 
                 if(response.ok) {
@@ -102,9 +130,11 @@
                         btn.classList.remove('is-active');
                         heartIcon.textContent = '♡';
                     } 
-            
+                    
                     // いいねの数リアルタイム更新
-                    document.getElementById(`count-${toUserId}`).textContent = result.newCount;
+                    document.getElementById("count-" + toUserId).textContent = result.newCount;
+                    //ログ確認
+                    console.log("count-" + toUserId);
                 }
             } catch (error) {
                 console.error("通信エラー:", error);

@@ -152,7 +152,7 @@ public class ProfileEditServlet extends HttpServlet{
 			profileImage = dao.findById(id).getProfileImage();
 		//画像がある時は、webapp→uploadsへセット
 		}else {
-			String uploadPath = getServletContext().getRealPath("/")+"uploads";
+			String uploadPath ="C:\\Users\\user\\ForDevelop\\workspace\\myportfolio\\src\\main\\webapp\\uploads";
 			
 			//もしフォルダが存在しない場合に作成
 			java.io.File uploadDir =new java.io.File(uploadPath);

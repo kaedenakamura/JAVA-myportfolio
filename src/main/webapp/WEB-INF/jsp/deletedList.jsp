@@ -112,7 +112,7 @@ body{
 	    	 %>
 	    	 </table>
 	    	     	 
-	    	 <p><a href="/myportfolio/html/register.jsp">新規登録画面へ戻る</a></p>
+	    	 <p><a href="${pageContext.request.contextPath}/list">ユーザー一覧へ戻る</a></p>
 	    	 	
 	    	 <script>
 	    	 function checkDelete(name){

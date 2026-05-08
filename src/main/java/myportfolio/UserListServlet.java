@@ -32,10 +32,11 @@ public class UserListServlet extends HttpServlet{
 		//ページ番号の受け取り
 		String pageStr = request.getParameter("page");
 		int page = 1 ;
-		
 		try {
 			if(pageStr != null && !pageStr.isEmpty()) {
-				page = Integer.parseInt(pageStr);
+				 page = Integer.parseInt(pageStr);
+				 if (page < 1) { page = 1;}
+				 
 			}
 		}catch(NumberFormatException e) {
 			//エラー来たら１ページ目に戻す作用
@@ -50,7 +51,7 @@ public class UserListServlet extends HttpServlet{
 		int totalUserCount = userDao.countAll();
 		//ページ５件
 		int limit = 5;
-		//全ページ数の計算（端数切り上げ）
+		//全ページ数の計算（端数切り上げ cell）
 		int maxPage =(int)Math.ceil((double) totalUserCount / limit);
 		
 		if(userList !=null && userList.size() != 0){
@@ -58,6 +59,7 @@ public class UserListServlet extends HttpServlet{
     		System.out.println(user.getId());
     		System.out.println(user.getName());
     		System.out.println(user.getEmail());
+    		System.out.println("最大ページ数"+maxPage);
     		}
 		}
 		

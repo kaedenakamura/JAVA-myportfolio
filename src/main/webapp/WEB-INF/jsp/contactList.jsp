@@ -107,6 +107,7 @@ background-color:rgb(0, 128, 255);
 			<tr>
 				<td>${c.id}</td>
 				<td>${c.name}</td>
+				<td>${c.email}</td>
 				<%--カテゴリーメソッドcontact.javaから取得 --%>
 				<td>${c.categoryName}</td>
 				<td>${c.shortBody}</td>

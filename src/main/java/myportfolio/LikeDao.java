@@ -19,24 +19,54 @@ public class LikeDao {
 	//===============================================-
 	//likeInsertメソッドにていいね登録するメソッド作成
 	//===============================================-
-	public void likeInsert(int fromUserid ,int toUserId) 
+	public void likeInsert(int fromUserId ,int toUserId) 
 			throws Exception{
-		String sql ="INSERT INTO likes(from_user_id , to_user_id) VALUES(?,?)";
+		// レコードが存在するか確認する
+		String sql = "SELECT COUNT(*) FROM likes WHERE from_user_id = ? AND to_user_id = ?";
+		//is_delete=0 も含めて存在確認
+		boolean exists = false;
+		
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps =con.prepareStatement(sql)){
-			ps.setInt(1,fromUserid);
+			//まずsql文から情報取り出しセットする
+			ps.setInt(1,fromUserId);
 			ps.setInt(2,toUserId);
-			ps.executeUpdate();
+			//カウントが取得できればtrue
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next() && rs.getInt(1) > 0) {
+					exists = true ;
+				}
+			}
+			if(exists) {
+				//もしレコードがあれば（登録済みであれば）、is_deletedを0 へ(復活)
+				String updateSql ="UPDATE likes SET is_delete = 0 WHERE from_user_id = ? AND to_user_id = ? ";
+				try(PreparedStatement psUpdate =con.prepareStatement(updateSql)){
+					psUpdate.setInt(1,fromUserId);
+					psUpdate.setInt(2, toUserId);
+					psUpdate.executeUpdate();
+				}
+			} else {
+				//もしないなら新規作成
+				String insertSql ="INSERT INTO	likes(from_user_id , to_user_id ,is_delete) VALUES(?,?,0)";
+				try(PreparedStatement psInsert = con.prepareStatement(insertSql)){
+					psInsert.setInt(1,fromUserId);
+					psInsert.setInt(2, toUserId);
+					psInsert.executeUpdate();
+				}
+			}
+			
+			
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	//===============================================
 	//いいね済みかを確認メソッド（重複防止）+1件ある場合はtrueを返しいいね済とする
 	//===============================================
 	public boolean isLiked(int fromUserId , int toUserId ) throws Exception{
-		String sql ="SELECT COUNT(*) FROM likes WHERE from_user_id = ? AND to_user_id = ? ";
+		String sql ="SELECT COUNT(*) FROM likes WHERE from_user_id = ? AND to_user_id = ? AND is_delete= 0 ";
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps = con.prepareStatement(sql)){
 				ps.setInt(1,fromUserId);
@@ -71,7 +101,7 @@ public class LikeDao {
 	//いいねの合計数を数えるメソッド作成(いいねをもらった数の合計)
 	//===============================================
 	public int countLikesByToUserId(int toUserId) throws Exception{
-		String sql ="SELECT COUNT(*) FROM likes  WHERE to_user_id = ? AND "; 
+		String sql ="SELECT COUNT(*) FROM likes  WHERE to_user_id = ? AND is_delete = 0"; 
 		try(Connection con =DriverManager.getConnection(JDBC_URL ,USER,PASS);
 				PreparedStatement ps = con.prepareStatement(sql)){
 			ps.setInt(1, toUserId);
@@ -94,10 +124,11 @@ public class LikeDao {
 		List<User> ranking = new ArrayList<>();
 		
 		
-		String sql = "SELECT u.id , u.name , COUNT(l.id) AS like_count"
+		String sql = " SELECT u.id , u.name , u.gender , u.bio , COUNT(l.id) AS like_count"
 					+ " FROM users AS u JOIN likes AS l ON u.id =l.to_user_id"
 					+ " WHERE"
-					+ " l.created_at >= DATE_FORMAT(NOW(),'%Y-%m-01')" 
+					+ " l.created_at >= DATE_FORMAT(NOW(),'%Y-%m-01')"
+					+ " AND l.is_delete = 0" 
 					+ " GROUP BY u.id , u.name "
 					+ " ORDER BY like_count DESC";
 		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
@@ -109,6 +140,8 @@ public class LikeDao {
 				//DBデータの値をuserへセット
 				user.setId(rs.getInt("id"));
 				user.setName(rs.getString("name"));
+				user.setGender(rs.getString("gender"));
+				user.setBio(rs.getString("bio"));
 				//userクラスのsetlikecountへ追加
 				user.setLikeCount(rs.getInt("like_count"));
 				
@@ -129,7 +162,7 @@ public class LikeDao {
 		
 		String sql = "SELECT u.* , COUNT(l.id) AS like_count "
 				+ "FROM users AS u LEFT JOIN likes AS l ON u.id =l.to_user_id"
-				+ " WHERE is_deleted = 0 GROUP BY u.id ORDER BY id DESC";
+				+ " WHERE is_delete = 0 GROUP BY u.id ORDER BY id DESC";
 		
 		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps = con.prepareStatement(sql);

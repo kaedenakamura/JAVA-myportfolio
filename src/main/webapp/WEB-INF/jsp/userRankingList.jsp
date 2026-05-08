@@ -5,7 +5,6 @@
 <head>
 	<meta charset="UTF-8">
 	<title>一般アカウント紹介</title>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 	<style>
 	/* 全体のレイアウト設定 */
 .user-grid {
@@ -49,7 +48,7 @@ h2{
             height: 40px;
             line-height: 40px;
             border-radius: 50%;
-            background-color: #666;
+            background-color: rgb(255, 0, 128);
             color: rgb(255, 255, 255);
             font-weight: bold;
             margin-bottom: 15px;
@@ -99,15 +98,31 @@ h2{
 		<c:forEach var="user" items="${rankingList}" varStatus="status">
 			<div class="user-card">
 			<!--順位の表示-->
+			<div class="rank-badge">
+    			${status.index + 1}
+			</div>
 			<h3>${user.name}</h3>
-			<p>${user.gender == 'male' ? '男性' : '女性'}</p>
+			<p>
+			    <c:choose>
+			        <c:when test="${user.gender eq 'male'}">
+			            男性
+			        </c:when>
+			
+			        <c:when test="${user.gender eq 'female'}">
+			            女性
+			        </c:when>
+			
+			        <c:otherwise>
+			            未設定
+			        </c:otherwise>
+			    </c:choose>
+			</p>
 			<p>${user.bio}</p>
 			<p>今月の獲得数：<strong id="count-${user.id}">${user.likeCount}</strong></p>
 			<button type="button"
-			      class="like-btn ${user.liked ? 'is-active' : ''}"
-			      data-user-id="${user.id}">
+			      class="like-btn ${user.liked ? 'is-active' : ''}" data-user-id="${user.id}">
 			  <span class="heart-icon">${user.liked ? '♥' : '♡'}</span>
-			  <span class="like-count">${user.likeCount}</span>
+			  <span class="like-count"  id="like-count-${user.id}">${user.likeCount}</span>
 			</button>
 			
 			<br><br>
@@ -123,9 +138,11 @@ h2{
 		// btnを一つ一つ読み込んで処理
 		document.querySelectorAll('.like-btn').forEach(btn => {
 			btn.addEventListener('click', async () => {
+				//ログ確認btn
+				console.log(btn);
 				// ログイン状態の判定(セッションにユーザーあるか)
-				const islogin =${not empty sessionScope.LoginUser ? 'true' : 'false'};
-				if(!islogin){
+				const isLogin =${not empty sessionScope.LoginUser ? 'true' : 'false'};
+				if(!isLogin){
 					if(confirm('いいねするにはログインが必要です。ログイン画面へ移動しますか？')){
 						window.location.href = '${pageContext.request.contextPath}/login';
 							}
@@ -136,17 +153,24 @@ h2{
 				
 				const params = new URLSearchParams();
 				params.append('toUserId',toUserId);
+				//ログ確認
+				console.log(typeof toUserId);
+				 console.log(toUserId);
+				 console.log("count-" + toUserId);
+				
 
 				try{
 					//RankingServletのdoPostにリクエスト送る
 					const response = await fetch("${pageContext.request.contextPath}/Ranking",{
 							method:"POST",
 							headers: { "Content-Type": "application/x-www-form-urlencoded" },
-							body:params
+							body:params.toString()
 							});
 					// awaitの処理通信が帰ってきたら、ボタン切り替え最新のものへいいねの数のリアルタイム更新
 					if(response.ok){
 						const result =await response.json();
+						console.log(result);
+						console.log(result.newCount);
 						//ボダン表示の切替
 						if(result.isLiked){
 							btn.classList.add('is-active');
@@ -155,18 +179,33 @@ h2{
 								btn.classList.remove('is-active');
 								heartIcon.textContent = '♡';
 								} 
-				
-					//いいねの数リアルタイム更新
-						document.getElementById(`count-${toUserId}`).textContent = result.newCount;
+						// ② 2箇所の数字を同時に更新
+					    // 「今月の獲得数」の書き換え
+					    const countDisp = document.getElementById("count-" + toUserId);
+					    //ログ確認
+						console.log(document.getElementById("count-" + toUserId));
+					    if (countDisp) {
+					    	
+					        countDisp.textContent = result.newCount;
+					    }
+
+					    // 「ハートの中の数字」の書き換え
+					    const innerDisp =  document.getElementById("like-count-" + toUserId);
+					    if (innerDisp) {
+	
+					        innerDisp.textContent =result.newCount;
+					  
+					    }
+					
 					}
-			}catch (error){
-				console.error("通信エラー:",error);
 				}
-				
+			catch (error){
+					console.error("通信エラー:",error);
+				}
 			});
 			
 		});
 		</script>
-		<a href="${pageContext.request.contextPath}/userMyPage" class="">マイページに戻る</a>
+		<a href="${pageContext.request.contextPath}/userMyPage">マイページに戻る</a>
 	</body>
 </html>

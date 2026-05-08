@@ -89,8 +89,10 @@ h2{
 			<h3>${user.name}</h3>	
 			<p>${user.gender == 'male' ? '男性' : '女性'}</p>
 			<p>${user.bio}</p>
-			<p><img src="${pageContext.request.contextPath}/uploads/${LoginUser.profileImage}"
-			 alt="プロフィール画像" style="width:100px; height:100px; border-radius:50%;"></p>
+			<p><img src="${pageContext.request.contextPath}/uploads/${user.profileImage}"
+			         alt="${user.name}の画像" 
+			         style="width:100px; height:100px; border-radius:50%; object-fit: cover;">
+			</p>
 			
 			
 			<%--いいねボタン：data属性で相手のIDを保持する --%>	
@@ -151,6 +153,7 @@ h2{
 				const data =await response.json();
 
 				//javaからの返信(data)を下に画面表示を切替
+				
 				if(data.isLiked){
 					btn.classList.add('is-active');
 					heartIcon.innerText='♥';
@@ -159,7 +162,10 @@ h2{
 						heartIcon.innerText = '♡';//ハートを白抜きに
 						}
 				//最新の合計数に変換
-				//count.innerText = data.newCount;
+				//countが存在するかチェック
+				if(count){
+					count.innerText = data.newCount;
+				}
 			}catch(error){
 				if(confilm('いいねするにはログインが必要です。ログイン画面に移動しますか')){
 					//はいが押されたらログイン画面へリダイレクト

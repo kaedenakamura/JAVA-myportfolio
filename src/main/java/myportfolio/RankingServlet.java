@@ -24,7 +24,7 @@ public class RankingServlet extends HttpServlet{
 	        // 月間ランキングを取得
 	        List<User> rankingList = likeDao.getMonthlyLikeRanking();
 	        System.out.println("ランキング取得件数: " + (rankingList != null ? rankingList.size() : "nullです"));
-
+	        
 	      //ログインしているときのみ自分がいいねしたかチェックする
 			if (loginUser != null) {
 		        int fromUserId = loginUser.getId();
@@ -95,6 +95,7 @@ public class RankingServlet extends HttpServlet{
 			}
 			//追加：最新のいいね数の取得
 			newCount = likeDao.countLikesByToUserId(toUserId);
+			System.out.println("最新いいね数：" + newCount);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -15,7 +15,7 @@ public class EmailSender {
     public static void sendContactEmail(Contact contact) {
         // 本来は設定ファイルに書くべき情報
         final String from = "tamago.k.work@gmail.com";
-        final String password = "tamago.k.work.1023"; 
+        final String password = "dfxv zoff wzha tmtd"; 
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");

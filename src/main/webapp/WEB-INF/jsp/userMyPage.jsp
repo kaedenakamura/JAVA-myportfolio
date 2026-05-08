@@ -17,7 +17,7 @@
 	.sidebar a {color: #fff; text-decoration: none; display:block; padding:10px 0;}
 	.sidebar a:hover{color: #ffeb3b;}*/
 	/* メインコンテンツのスタイル  flex-growで最大幅 box-sizingでパディング含めた幅計算*/
-	.main-content{margin:0 auto; background: rgb(192, 192, 192); min-height:100vh;
+	.main-content{margin:0 auto; background: rgb(255, 255, 255); min-height:100vh;
 	flex-grow:1; box-sizing: border-box;}
 	.card {background: #fff; padding:15px; margin-bottom: 20px ; border-radius: 8px ; box-shadow: 0 2px 5px rgba(0,0,0,1);}
 	/*table {width: 100%; border-collapse: collapse;}
@@ -59,21 +59,23 @@
 	<header>
 		<h1>マイページ</h1>
 	</header>
+	<%--
 	<div class="user-status-bar">
-		<%--プロフィール画像の表示--%>
+		<%--プロフィール画像の表示 
 		<div class="profile-icon-small">
 		<c:choose>
-			<%--画像が設定されている場合--%>
+			<%--画像が設定されている場合
 			<c:when test="${not empty user.profileImage}">
 				<img src="${pageContext.request.contextPath}/uploads/${LoginUser.profileImage}"
 				alt="icon">
 			</c:when>
 			<c:otherwise>
-				<%--画像がないときの代わりの文字とアイコン --%>
+				<%--画像がないときの代わりの文字とアイコン 
 				<div class="no-image">NO Image</div>
 			</c:otherwise>
 		</c:choose>
-		</div>	
+		</div>
+	--%>
 	<%--ステータス表示(loginservletよりsession.setAttribute→LoginUser)--%>
 	<div class="user-info-text">		
 		<section class="card">
@@ -90,11 +92,11 @@
 	
 	
 		<div class="likes-container" >
-			<div class="flex-card" style="padding:20px; border:1px solid rgb(128, 128, 128);border-radius:8px;">
+			<div class="flex-card" style="padding:20px; border:1px solid rgb(192, 192, 192);border-radius:8px;">
 			<h2>今月のいいね数</h2>
 			<p style="font-size:24px; color:rgb(0, 0, 0)">${monthlyLikes}</p>
 		</div>
-		<div class="flex-card" style="padding: 20px; border: 1px solid rgb(128, 128, 128); border-radius: 8px;">
+		<div class="flex-card" style="padding: 20px; border: 1px solid rgb(192, 192, 192); border-radius: 8px;">
 			<h2>年間のいいね数</h2>
 			<p style="font-size:24px; color:rgb(0, 0, 0)">${yearlyLikes}</p>
 		</div>

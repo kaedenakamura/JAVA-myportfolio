@@ -174,8 +174,8 @@ public class UserDao {
 					user.setGender(rs.getString("gender"));
 					user.setAge(rs.getInt("age"));
 					user.setBio(rs.getString("bio"));
-					user.setProfileImage(rs.getString("profileImage"));
-					user.setIsDeleted(rs.getInt("isDaleted"));
+					user.setProfileImage(rs.getString("profile_image"));
+					user.setIsDeleted(rs.getInt("is_Deleted"));
 					
 				}
 			}
@@ -193,7 +193,7 @@ public class UserDao {
 		//サブクエリを使ってlikeCount計算 ＋ID検索で全情報取得
 		String sql = "SELECT u.*,"
 				+ "(SELECT COUNT(*) "
-				+ "FROM likes AS l WHERE l.to_user_id =u.id)AS like_count "
+				+ "FROM likes AS l WHERE l.to_user_id =u.id AND l.is_delete = 0)AS like_count "
 				+ "FROM users AS u WHERE u.id =?";
 		
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);

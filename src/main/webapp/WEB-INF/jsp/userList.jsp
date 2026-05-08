@@ -153,21 +153,16 @@ body{
     	 <% 
     	 }
     	 %>
-    	 <span>現在のページ:<%=currentPage %></span>
+    	 <span><%= currentPage %> / <%= maxPage %> ページ</span>
     	 <%--次のページへリンク--%>
-    	 <a href="list?page=<%= currentPage +1  %>">次へ→</a>
-    	 
-    	 </div>
     	 <%--ページネーションの土台 --%>
-    	 <div style="margin-top: 20px;">
     	 <% if(currentPage < maxPage){ %>
     	 	<a href="list?page=<%= currentPage + 1 %>">次へ→</a>
     	 <% }%>
     	 </div>    	 
-    	 <div style="margin-top: 10px;">
+    	 <div style="margin-top: 20px;">
     	 <p><a href="${pageContext.request.contextPath}/deletedList">ユーザー削除済一覧へ</a></p>
     	 </div>
-    	 <p><a href="${pageContext.request.contextPath}/html/register.jsp">新規登録画面へ戻る</a></p>
     	 <p><a href="${pageContext.request.contextPath}/dashboard">ダッシュボードへ戻る</a></p>
     </div>
     	 	

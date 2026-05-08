@@ -96,7 +96,7 @@ th {background-color:rgb(255,255,128);}
 <p>本文：<br>
 	<span>${contact.formattedBody}</span>
 	</p>
-<form class="form-group" action="contact" method="post">
+<form class="form-group" action="${pageContext.request.contextPath}/contact?action=contact" method="post">
 	<input type="hidden" name="id" value="${contact.id}">
 	
 	<label>ステータス></label>

@@ -37,6 +37,7 @@ public class CategoryServlet extends HttpServlet {
 				dao.delete(id);
 				//完了したら一覧に戻る
 				response.sendRedirect("category");
+				//新規category追加
 			}else if ("create".equals(action)) {
 				request.getRequestDispatcher("WEB-INF/jsp/categoryForm.jsp")
 				.forward(request, response);
@@ -56,7 +57,7 @@ protected void doPost(HttpServletRequest request ,HttpServletResponse response)
 		CategoryDao dao =new CategoryDao();
 		
 		//フォームからcategory_groupを受け取る
-		String categoryGroup =request.getParameter("category_group");
+		String categoryGroup =request.getParameter("categoryGroup");
 		
 		if("update".equals(action)) {
 		//更新処理,画面から送られてきたIDと新しい名前を取得
@@ -76,11 +77,17 @@ protected void doPost(HttpServletRequest request ,HttpServletResponse response)
 		//Edit.jspよりPOST
 		//サクセス取得時（更新成功時）カテゴリー一覧へ再び戻る
 			response.sendRedirect("category");
-		}else {
+		}else if ("insert".equals(action)) {
+			if (categoryGroup == null || categoryGroup.isEmpty()) {
+			request.getSession().setAttribute("errormsg", "カテゴリー名が空です");
+            response.sendRedirect("WEB-INF/jsp/categoryForm.jsp"); 
+            return;
+			}
 			//新規登録(value=insert)処理（action=updateではないとき）
 			//categoryForm.jspよりPOST
 			dao.insert(categoryGroup);
 			response.sendRedirect("category");
+			return;
 		}
 		
 		}

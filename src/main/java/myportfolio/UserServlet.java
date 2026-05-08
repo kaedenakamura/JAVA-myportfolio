@@ -99,7 +99,7 @@ public class UserServlet extends HttpServlet {
 		return;
 	}
 	//性別のチェック
-	if(gender != null && !(gender.equals("male")|| gender.equals("female"))) {
+	if(gender == null || !(gender.equals("male")|| gender.equals("female"))) {
 		forwardWithError(request, response, "8", name, ruby, email, ageStr, bio, gender);
 		return;
 	}

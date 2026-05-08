@@ -98,7 +98,7 @@ background-color:rgb(0, 128, 255);
 <div class="item" >
 	<h2 class="header">新規カテゴリー登録</h2>
 	
-	<form action="category" method="post">
+	<form action="${pageContext.request.contextPath}/category" method="post">
 	
 	<%--サーブレットのdoPostで「新規登録」だと判断させるための合図--%>
 	<%--前回のServletの設計だと、action がupdate以外だと登録処理となる--%>
