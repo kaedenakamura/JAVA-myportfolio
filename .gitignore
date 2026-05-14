@@ -5,3 +5,4 @@
 .classpath
 .metadata/
 config.properties
+/target/
