@@ -140,18 +140,25 @@ background-color:rgb(0, 128, 255);
 		<%--共通項目--%>
 			<p>
 				<label for="name"  class="common-label">名前:</label><br>
-				<input type="text" id="name" name="name" value="${user.name}"placeholder="255文字以下で入力してください" required>
+				<input type="text" id="name" name="name" value="${user.name}"placeholder="255文字以下で入力してください" >
 			</p>
 			<p>
 				<label for="email"  class="common-label">メールアドレス:</label><br>
-				<input type="email" id="email" name="email" value="${user.email}"placeholder="メールアドレスの形式で255文字以下で入力してください"required>
+				<input type="email" id="email" name="email" value="${user.email}"placeholder="メールアドレスの形式で255文字以下で入力してください">
 			</p>
 			<p>
 				<%--パスワードの入力 --%>
 				<label for="password" class="common-label">パスワード(変更する場合入力してください)</label><br>
 				<input type="password" id="password" name="password" placeholder="8-32文字の半角英数字で入力してください">
 			</p>
-			
+			<p>
+			    <label class="common-label">公開設定:</label>
+			    <input type="radio" name="status" value="1" id="status_public" ${(status == '1' || empty status) ? 'checked' : ''}>
+			    <label for="status_public" style="display:inline; font-weight:normal;">公開</label>
+			    
+			    <input type="radio" name="status" value="0" id="status_private" ${status == '0' ? 'checked' : ''}>
+			    <label for="status_private" style="display:inline; font-weight:normal;">非公開</label>
+			</p>
 			<button class="btn-submit" type="submit">更新する</button>
 			<a class="back-link" href="list">キャンセル</a>
 		</form>

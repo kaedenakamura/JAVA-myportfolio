@@ -43,7 +43,7 @@ public class UserDao {
 			con = DriverManager.getConnection(JDBC_URL, USER, PASS);
 
 			//  SQLの作成
-			String sql = "INSERT INTO users (name, ruby, email, password, role, gender, age, bio, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO users (name, ruby, email, password, role, gender, age, bio, profile_image,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
 			//  実行準備
 			ps = con.prepareStatement(sql);
@@ -58,6 +58,8 @@ public class UserDao {
 	        ps.setInt(7, user.getAge());
 	        ps.setString(8, user.getBio());
 	        ps.setString(9, user.getProfileImage());
+	        ps.setInt(10,user.getStatus()
+	        		);
 	        
 			int result = ps.executeUpdate();
 
@@ -112,7 +114,8 @@ public class UserDao {
 						        rs.getInt("age"),
 						        rs.getString("bio"),
 						        rs.getString("profile_image"),
-						        rs.getInt("is_deleted")
+						        rs.getInt("is_deleted"),
+						        rs.getInt("status")
 								);
 						
 						// Userオブジェクトをリストに追加
@@ -176,6 +179,8 @@ public class UserDao {
 					user.setBio(rs.getString("bio"));
 					user.setProfileImage(rs.getString("profile_image"));
 					user.setIsDeleted(rs.getInt("is_Deleted"));
+					user.setStatus(rs.getInt("status")
+							);
 					
 				}
 			}
@@ -217,6 +222,7 @@ public class UserDao {
 		                    rs.getString("bio"),
 		                    rs.getString("profile_image"),
 		                    rs.getInt("is_deleted"),
+		                    rs.getInt("status"),
 		                    rs.getInt("like_Count")
 							);
 					System.out.println(id +"DBより全情報を取得しました");
@@ -238,7 +244,7 @@ public class UserDao {
 	//ダッシュボードよりユーザー情報の更新(UPDATE)
 	//===============================================
 	public boolean update(User user) {
-		String sql ="UPDATE users SET name=?, ruby=?, email=?, role=?, gender=?, age=?, bio=?, profile_image=? WHERE id=?";
+		String sql ="UPDATE users SET name=?, ruby=?, email=?,password=?, role=?, gender=?, age=?, bio=?, profile_image=?,status=? WHERE id=?";
 		boolean isSuccess = false;
 		
 		try(Connection con = DriverManager.getConnection(JDBC_URL,USER,PASS);
@@ -247,12 +253,14 @@ public class UserDao {
 			ps.setString(1, user.getName());
 	        ps.setString(2, user.getRuby());
 	        ps.setString(3, user.getEmail());
-	        ps.setInt(4, user.getRole());
-	        ps.setString(5, user.getGender());
-	        ps.setInt(6, user.getAge());
-	        ps.setString(7, user.getBio());
-	        ps.setString(8, user.getProfileImage());
-	        ps.setInt(9, user.getId());
+	        ps.setString(4,user.getPassword());
+	        ps.setInt(5, user.getRole());
+	        ps.setString(6, user.getGender());
+	        ps.setInt(7, user.getAge());
+	        ps.setString(8, user.getBio());
+	        ps.setString(9, user.getProfileImage());
+	        ps.setInt(10, user.getStatus());//追記
+	        ps.setInt(11, user.getId());
 			
 			int result =ps.executeUpdate();
 			if(result > 0) {
@@ -315,7 +323,9 @@ public class UserDao {
 					        rs.getInt("age"),
 					        rs.getString("bio"),
 					        rs.getString("profile_image"),
-					        rs.getInt("is_deleted"));
+					        rs.getInt("is_deleted"),
+					        rs.getInt("status")
+							);
 							
 					list.add(user);
 				}
@@ -422,7 +432,10 @@ public class UserDao {
 							        rs.getInt("age"),
 							        rs.getString("bio"),
 							        rs.getString("profile_image"),
-							        rs.getInt("is_deleted"));
+							        rs.getInt("is_deleted"),
+									rs.getInt("status")
+									
+									);
 							// Userオブジェクトをリストに追加
 							userList.add(user);}
 						}catch (SQLException e) {
@@ -486,12 +499,12 @@ public class UserDao {
 		return rankingList;
 		}
 		//===============================================
-		//生存ユーザー数を表示するメソッド（is_daleted=0）の総数を抽出
+		//生存ユーザー数を表示するメソッド（is_daleted=0）(status=1)の総数を抽出
 		//===============================================
 		public int countActive() {
 		    int count = 0;
 		    // 削除されていない人だけを数える
-		    String sql = "SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0";
+		    String sql = "SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0 AND status = 1";
 
 		    try (Connection con = DriverManager.getConnection(JDBC_URL, USER, PASS);
 		         PreparedStatement pstmt = con.prepareStatement(sql);
@@ -611,6 +624,26 @@ public class UserDao {
 				result = true;
 			}
 				
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+		//===============================================
+		//ステータス更新のメソッド
+		//===============================================
+		public boolean updateStatus(int id , int status) {
+			boolean result =false;
+			String sql ="UPDATE users SET status = ? WHERE id = ? ";
+			try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
+					PreparedStatement ps = con.prepareStatement(sql)){
+					ps.setInt(1, status);
+					ps.setInt(2, id);
+				
+					int rs = ps.executeUpdate();
+					if(rs > 0) {
+						result = true;
+					}
 			}catch(SQLException e) {
 				e.printStackTrace();
 			}

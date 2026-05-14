@@ -79,10 +79,11 @@
 	<%--ステータス表示(loginservletよりsession.setAttribute→LoginUser)--%>
 	<div class="user-info-text">		
 		<section class="card">
-			<h2>${LoginUser.name}さんのステータス</h2>
+			<h2>${LoginUser.name}さんの情報</h2>
 		<div class="user-info">
 			<p>メールアドレス:${LoginUser.email}</p>
 			<p>権限:${LoginUser.role == 1 ? "管理者" : "一般ユーザー" }</p>
+			<p>公開ステータス:${LoginUser.status == 1 ? "公開" : "非公開"}</p>
 		</div>
 		<%-- プロフィール確認画面へのリンク profieleView.jsp --%>
         <a href="${pageContext.request.contextPath}/profileView" 

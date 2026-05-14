@@ -74,8 +74,8 @@ public class ProfileEditServlet extends HttpServlet{
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String gender = request.getParameter("gender");
-		String ageStr = request.getParameter("age");
-		int age = Integer.parseInt(ageStr);
+		String ageStr = request.getParameter("age");//バリデーション通ればint型へ変換
+		int age = 0;//バリデーション対策で初期値設定
 		String bio  = request.getParameter("bio");
 		
 		//画像の受け取り
@@ -85,8 +85,9 @@ public class ProfileEditServlet extends HttpServlet{
 		String profileImage =filePart.getSubmittedFileName();
 		
 		// バリデーション開始
+		
 		//名前とメールが空の場合はじく
-		if(name == null || name.isEmpty() || email == null || email.isEmpty()) {
+		if(name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty()) {
 		//失敗した場合セッションに入れてredirect sesson省略形を使用
 			request.getSession().setAttribute("errorMsg" , "名前とメールアドレスは必須事項です。");
 			response.sendRedirect("profileEdit");
@@ -98,7 +99,7 @@ public class ProfileEditServlet extends HttpServlet{
 			return;
 		}
 		//パスワードが入力されているときにバリデーションする
-		if(password != null && !password.isEmpty()) {
+		if(password != null && !password.trim().isEmpty()) {
 			//passwordUtilからisValidPasswordメソッド起動
 			if(!PasswordUtil.isValidPassword(password)) {
 				request.getSession().setAttribute("errorMsg","パスワードは8-32文字の英数字（ハイフン可）で入力してください");
@@ -106,20 +107,38 @@ public class ProfileEditServlet extends HttpServlet{
 			return;
 			}
 		//パスワードが未入力（空）の場合、現在のパスワードを維持する
-			}else if (password == null || password.isEmpty()) {
+			}else if (password == null || password.trim().isEmpty()) {
 				//現在の情報をDBから取得
 				User currentUser = dao.findById(id);
 				//今のパスワードを取得→パスワードにセット
 				password = currentUser.getPassword();
 			}
 		//ふりがなをひらがな入力していないとバリデーションエラー
-		if(!ruby.isEmpty() && !ruby.matches("^[\\u3040-\\u309F]+$")) {
+		if(!ruby.trim().isEmpty() && !ruby.matches("^[\\u3040-\\u309F]+$")) {
 			request.getSession().setAttribute("errorMsg","ふりがなは「ひらがな」入力してください");
 			response.sendRedirect("profileEdit");
 			return;
 		}
 		//バリデーション追加年齢、自己紹介、性別、画像
+		//age null 対策
+		if (ageStr == null || ageStr.trim().isEmpty()) {
+		    // 【重要】空欄なら、エラーメッセージをセットして元の画面に戻す
+		    request.getSession().setAttribute("msg", "年齢を入力してください");
+		    response.sendRedirect("profileEdit"); 
+		    return; 
+		}
+		
+		try {
+		    age = Integer.parseInt(ageStr);
+		} catch (NumberFormatException e) {
+		    // 数字以外が入った時のリスク管理
+		    request.getSession().setAttribute("msg", "年齢は数字で入力してください");
+		    response.sendRedirect("profileEdit");
+		    return;
+		}
+		
 		//年齢チェック
+		
 		if(age < 0 || age> 999) {
 			request.getSession().setAttribute("errorMsg","年齢を3桁以内で入力してください");
 			response.sendRedirect("profileEdit");
@@ -152,7 +171,7 @@ public class ProfileEditServlet extends HttpServlet{
 			profileImage = dao.findById(id).getProfileImage();
 		//画像がある時は、webapp→uploadsへセット
 		}else {
-			String uploadPath ="C:\\Users\\user\\ForDevelop\\workspace\\myportfolio\\src\\main\\webapp\\uploads";
+			String uploadPath =getServletContext().getRealPath("/uploads");
 			
 			//もしフォルダが存在しない場合に作成
 			java.io.File uploadDir =new java.io.File(uploadPath);

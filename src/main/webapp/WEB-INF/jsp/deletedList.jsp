@@ -1,6 +1,7 @@
 <%--1. 設定；javaリストやUserクラスを使用できるようにする--%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, myportfolio.User" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
 <html>
@@ -89,7 +90,16 @@ body{
 	    		<td><%= user.getId()   %> </td>
 	    		<td><%= user.getName() %></td>
 	    		<td><%= user.getEmail() %></td>
-	    		<td>削除済み</td>
+				<td>
+				    <c:choose>
+				        <c:when test="${user.status == 1}">
+				            <span style="color: blue;">公開</span>
+				        </c:when>
+				        <c:otherwise>
+				            <span style="color: gray;">非公開</span>
+				        </c:otherwise>
+				    </c:choose>
+				</td>
 	    		<td>
 					<%--復元リンク --%>
 	    			<a href="restore?id=<%= user.getId() %>" >復元</a>

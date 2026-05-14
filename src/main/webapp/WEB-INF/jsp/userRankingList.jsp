@@ -206,6 +206,6 @@ h2{
 			
 		});
 		</script>
-		<a href="${pageContext.request.contextPath}/userMyPage">マイページに戻る</a>
+		<a class="back-link" href="${pageContext.request.contextPath}/userMyPage">マイページに戻る</a>
 	</body>
 </html>

@@ -17,6 +17,8 @@ public class User {
     private int isDeleted;
     //like機能
     private int likeCount;
+    private int status;// 0:非公開, 1:公開
+    
     
     //非同期処理の為の一時的なlike格納
     private boolean isLiked;
@@ -68,10 +70,11 @@ public class User {
         this.age = age;
         this.bio = bio;
         this.profileImage = profileImage;
+        
     }
- // 全項目入りのコンストラクタ(DAO用)+isDaleted追加分
+ // 全項目入りのコンストラクタ(DAO用)+isDaleted追加分+status追加分
     public User(int id, String name, String email, String password, int role, 
-                String ruby, String gender, int age, String bio, String profileImage ,int isDeleted) {
+                String ruby, String gender, int age, String bio, String profileImage ,int isDeleted,int status) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -83,10 +86,11 @@ public class User {
         this.bio = bio;
         this.profileImage = profileImage;
         this.isDeleted = isDeleted;
+        this.status = status;
     }
  // 全項目入りのコンストラクタ(DAO用)+likeCount追加分
     public User(int id, String name, String email, String password, int role, 
-                String ruby, String gender, int age, String bio, String profileImage ,int isDeleted, int likeCount) {
+                String ruby, String gender, int age, String bio, String profileImage ,int isDeleted, int status,int likeCount) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -98,13 +102,29 @@ public class User {
         this.bio = bio;
         this.profileImage = profileImage;
         this.isDeleted = isDeleted;
+        this.status = status;
         this.likeCount = likeCount;
     }
+    //UPdateservletにて
+    public User(int id, String name, String email, String password, int role, String ruby, String gender,
+			int age, String bio, String profileImage, int status) {
+    	 this.id = id;
+         this.name = name;
+         this.email = email;
+         this.password = password;
+         this.role = role;
+         this.ruby = ruby;
+         this.gender = gender;
+         this.age = age;
+         this.bio = bio;
+         this.profileImage = profileImage;
+         this.status = status;
+	}
 
-    //toStringオーバーライドメソッドの作成
+	//toStringオーバーライドメソッドの作成
     @Override
     public String toString() {
-    	return "User [id="+id+", name="+name+",email="+email+",role="+role+"]";
+    	return "User [id="+id+", name="+name+",email="+email+",role="+role+",status="+status+"]";
     	
     }
 	
@@ -205,6 +225,14 @@ public class User {
 
 	public void setLiked(boolean isLiked) {
 		this.isLiked = isLiked;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 }
 

@@ -128,7 +128,7 @@ public class LikeDao {
 					+ " FROM users AS u JOIN likes AS l ON u.id =l.to_user_id"
 					+ " WHERE"
 					+ " l.created_at >= DATE_FORMAT(NOW(),'%Y-%m-01')"
-					+ " AND l.is_delete = 0" 
+					+ " AND l.is_delete = 0 AND u.status = 1" 
 					+ " GROUP BY u.id , u.name "
 					+ " ORDER BY like_count DESC";
 		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
@@ -160,10 +160,23 @@ public class LikeDao {
 		//空のリストを作成
 		List<User> userList = new ArrayList<>();
 		
-		String sql = "SELECT u.* , COUNT(l.id) AS like_count "
-				+ "FROM users AS u LEFT JOIN likes AS l ON u.id =l.to_user_id"
-				+ " WHERE is_delete = 0 GROUP BY u.id ORDER BY id DESC";
-		
+		String sql =
+			    "SELECT " +
+			    " u.id, u.name, u.email, u.password, u.role, " +
+			    " u.ruby, u.gender, u.age, u.bio, " +
+			    " u.profile_image, u.is_deleted, u.status, " +
+			    " COUNT(l.id) AS like_count " +
+			    "FROM users u " +
+			    "LEFT JOIN likes l " +
+			    " ON u.id = l.to_user_id " +
+			    " AND l.is_delete = 0 " +
+			    "WHERE u.is_deleted = 0 " +
+			    " AND u.status = 1 " +
+			    "GROUP BY " +
+			    " u.id, u.name, u.email, u.password, u.role, " +
+			    " u.ruby, u.gender, u.age, u.bio, " +
+			    " u.profile_image, u.is_deleted, u.status " +
+			    "ORDER BY u.id DESC";
 		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps = con.prepareStatement(sql);
 				ResultSet rs = ps.executeQuery()){
@@ -180,7 +193,8 @@ public class LikeDao {
 					        rs.getInt("age"),
 					        rs.getString("bio"),
 					        rs.getString("profile_image"),
-					        rs.getInt("is_deleted")
+					        rs.getInt("is_deleted"),
+					        rs.getInt("status")
 							);
 					//joinした結果からいいね数をセット
 					user.setLikeCount(rs.getInt("like_count"));

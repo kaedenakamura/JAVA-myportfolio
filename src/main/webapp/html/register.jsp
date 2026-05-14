@@ -148,11 +148,13 @@ background-color:rgb(0, 128, 255);
 <%--画像ファイルやファイルが含まれるバイナリーデータの場合、エンクタイプ（エンコードタイプ）設定"multipart/form-data"--%>
 	<form class="form-group" action="${pageContext.request.contextPath}/register" method="post" enctype="multipart/form-data">
 		<div>
-		<label>権限</label>
-		<%--現在のロールに合わせてcheckedを切り替える --%>
-		<input type="radio" name="role" id="role_admin" value="1" onclick="toggleFields()" ${user.role == 1 ? 'checked' : ""} <label for="role_admin">管理者</label>
-		<label for="role_admin">管理者</label>
-		<input type="radio" name="role"id="role_general" value="0" onclick="toggleFields()" ${user.role == 0 ? 'checked' : ""} <label for="role_general">一般</label>
+	    <label>権限</label>
+	    <%-- roleがnull（初回表示）の時は一般(0)をデフォルトにする --%>
+	    <label for="role_admin">管理者</label>
+	    <input type="radio" name="role" id="role_admin" value="1" onclick="toggleFields()" ${role == '1' ? 'checked' : ''}>
+	    
+	    <label for="role_general">一般</label>
+	    <input type="radio" name="role" id="role_general" value="0" onclick="toggleFields()" ${(role == '0' || empty role) ? 'checked' : ''}>
 		</div>
 		<%--一般ユーザーの時だけ見せたい項目--%>
 		<div id="general-fields" style="display:none;">
@@ -185,10 +187,19 @@ background-color:rgb(0, 128, 255);
 		<label for="password" class="common-label">パスワード:</label>
 		<input type="password"id="password" name="password" placeholder="パスワード" value="password">
 	</p>
-	<button type="btn-submit">登録する</button>
+	<p>
+    <label class="common-label">公開設定:</label>
+    <input type="radio" name="status" value="1" id="status_public" ${(status == '1' || empty status) ? 'checked' : ''}>
+    <label for="status_public" style="display:inline; font-weight:normal;">公開</label>
+    
+    <input type="radio" name="status" value="0" id="status_private" ${status == '0' ? 'checked' : ''}>
+    <label for="status_private" style="display:inline; font-weight:normal;">非公開</label>
+	</p>
+	
+	<button type="submit" class="btn-submit">登録する</button>
 	</form>
 <div>
-	<a class="btn-submit" href="../list">ユーザー一覧へ</a>
+	<a class="btn-submit" href="${pageContext.request.contextPath}/list">ユーザー一覧へ</a>
 </div>
 <div>
 	<a class="back-link" href="login.jsp">ログイン画面へ</a>
@@ -198,26 +209,38 @@ background-color:rgb(0, 128, 255);
 	
 	
 		<script>
-		function toggleFields(){
-			//radioボタンの値取得
-			const role = document.querySelector('input[name="role"]:checked').value;
-			console.log("現在のロールは:"+ role);
-			//操作したい「ふりがなの箱」を取得
-			const generalFields =document.getElementById("general-fields");
-			//デバック確認
-			//alert("ボタンが押されました！");
-			if (role == "0"){
-				//一般なら表示
-				generalFields.style.display="block";
-				}else{
-					//管理者なら隠す（none）
-					generalFields.style.display="none";
-	
-				}
-			}
-		// 画面の読み込み（リロードや戻る）が完了した時も実行する
-		window.onload = toggleFields;
-		</script>
+	function toggleFields(){
+    //  ラジオボタンの値取得
+    const roleElement = document.querySelector('input[name="role"]:checked');
+    if (!roleElement) return; // 何も選ばれていなければ終了
+
+    const role = roleElement.value;
+    console.log("現在のロールは:" + role);
+
+    // 一般項目のエリアを取得
+    const generalFields = document.getElementById("general-fields");
+
+    // 一般項目エリアの中にある全ての入力要素を取得
+    const inputs = generalFields.querySelectorAll('input, textarea, select');
+    
+    console.log(inputs);
+
+    if (role == "0"){
+        // 一般なら表示
+        generalFields.style.display = "block";
+        // 全ての入力要素を有効化
+        inputs.forEach(input => input.disabled = false);
+    } else {
+        // 管理者なら隠す
+        generalFields.style.display = "none";
+        // 全ての入力要素を無効化（送信されないようにする）
+        inputs.forEach(input => input.disabled = true);
+    }
+}
+
+//  画面読み込み完了時に実行
+window.addEventListener('DOMContentLoaded', toggleFields);
+</script>
 	</body>
 </html>
 

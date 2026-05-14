@@ -46,15 +46,15 @@ width:100%; padding:10px; margin-top:5px; border:1px solid rgb(192, 192, 192); b
 	<% } %>
 	
 	<%-- 画像を送るための enctype を設定 --%>
-	<form action="profileEdit" method="post" enctype="multipart/form-data">
+	<form action="${pageContext.request.contextPath}/profileEdit" method="post" enctype="multipart/form-data">
 		<label for="name">名前</label>
-		<input type="text" id="name" name="name" value="${LoginUser.name}" required>
+		<input type="text" id="name" name="name" value="${LoginUser.name}" >
 		
 		<label for="ruby">ふりがな</label>
 		<input type="text" id="ruby" name="ruby" value="${LoginUser.ruby}" >
 		
 		<label for="email">メールアドレス</label>
-		<input type="email" id="email" name="email" value="${LoginUser.email}"required>
+		<input type="email" id="email" name="email" value="${LoginUser.email}">
 		
 		<label for="password">パスワード(変更する場合入力)</label>
 		<input type="password" id="password" name="password" placeholder="8文字以上の英数字">

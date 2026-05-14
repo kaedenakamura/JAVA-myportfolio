@@ -118,7 +118,6 @@ background-color:rgb(0, 128, 255);
  <a href="${pageContext.request.contextPath}/Ranking">いいねランキングを見る</a><br>
  <p>お問い合わせはこちら↓</p>
  <a href="${pageContext.request.contextPath}/contact?action=new">お問い合わせ</a><br>
- <p><a class="back-link"href="${pageContext.request.contextPath}/html/register.jsp">新規登録はこちら</a></p>
 </div> 
 </body>
 </html>

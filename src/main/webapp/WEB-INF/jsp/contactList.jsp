@@ -96,10 +96,11 @@ background-color:rgb(0, 128, 255);
 		<tr>
 			<th>ID</th>
 			<th>名前</th>
+			<th>メールアドレス</th>
 			<th>カテゴリー</th>
 			<th>本文</th>
 			<th>ステータス</th>
-			<th>詳細</th>
+			<th>操作</th>
 		</tr>
 		
 		<%-- forEachにて１つずつリストとして格納 --%>

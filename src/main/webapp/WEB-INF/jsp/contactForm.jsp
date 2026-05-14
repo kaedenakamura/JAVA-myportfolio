@@ -94,16 +94,22 @@ background-color: rgb(0,128,255);
 	<h2 class="header">お問合せフォーム</h2>
 	<%--エラーメッセージがあれば表示する--%>
 	<% 
-	String error =(String)session.getAttribute("error");
+	String error =(String)request.getAttribute("error");
+	String success =(String)session.getAttribute("success");
 	if(error != null){%>
-	<div style="color:rgb(255, 128, 128);backgroundcolor:#f2dede; border:1px solid #ebccd1;
-	 padding: 10px margin-bottom: 20px; border-radius:4px;">
+	<div style="color:rgb(255, 128, 128);background-color:#f2dede; border:1px solid #ebccd1;
+	padding: 10px; margin-bottom: 20px; border-radius:4px;">
 	<%=error%>
 	</div>
 	<% 
-	session.removeAttribute("error");
 	}
 	%>
+	<% if(success != null) { %>
+    <div class="success-msg" style="color: green; background: #e0ffe0; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+        <%= success %>
+    </div>
+    <% session.removeAttribute("success"); %>
+	<% } %>
 	
 	<%--IDはauto_increment statusはDeffault 0未対応で自動登録 SQL文--%>
 	<form  action="${pageContext.request.contextPath}/contact?action=insert" method="post">

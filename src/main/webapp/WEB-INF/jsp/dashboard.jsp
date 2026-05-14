@@ -72,6 +72,7 @@ if (latestUser == null ){
 	<a href="${pageContext.request.contextPath}/contact?action=list">お問い合わせ一覧</a>
 	<a href="${pageContext.request.contextPath}/category">カテゴリー一覧</a>
 	<a href="${pageContext.request.contextPath}/contact?action=new">新規お問合せ</a>
+	<a href="${pageContext.request.contextPath}/html/register.jsp">新規登録はこちら</a>
 	<a href="${pageContext.request.contextPath}/like">公開アカウント一覧を見る</a>
 </aside
 >

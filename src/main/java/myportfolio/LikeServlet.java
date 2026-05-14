@@ -1,6 +1,7 @@
 package myportfolio;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -18,7 +19,13 @@ public class LikeServlet extends HttpServlet {
 		UserDao userDao = new UserDao();
 		LikeDao likeDao = new LikeDao();
 		//表示するユーザーの一覧を取得
-		List<User> userList =userDao.findAll();
+		List<User> userList = new ArrayList<>();
+		 try {
+			userList =likeDao.findAllList();
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
 		
 		//ユーザーをいいねしているかチェック
 		HttpSession session = request.getSession();

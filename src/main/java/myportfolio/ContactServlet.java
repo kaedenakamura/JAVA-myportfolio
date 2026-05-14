@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/contact")
 public class ContactServlet extends HttpServlet{
@@ -116,6 +117,8 @@ public class ContactServlet extends HttpServlet{
 	    		//メール送信
 	    		EmailSender.sendContactEmail(newContact);
 	    		System.out.println(newContact);
+	    		HttpSession session = request.getSession();
+	    		session.setAttribute("success" , "お問合せ送信しました。ありがとうございました。");
 	    		response.sendRedirect("contact?action=new");
 	    		return;
 	    	}

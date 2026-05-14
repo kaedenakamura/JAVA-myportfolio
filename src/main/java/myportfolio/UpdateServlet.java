@@ -53,16 +53,21 @@ public class UpdateServlet extends HttpServlet {
 		String password = request.getParameter("password"); 
 		int role = Integer.parseInt(request.getParameter("role"));
 		String gender = request.getParameter("gender");
-		int age = Integer.parseInt(request.getParameter("age"));
+		String ageStr = request.getParameter("age");
+		int age = (ageStr != null && !ageStr.isEmpty()) ? Integer.parseInt(ageStr) : 0;
 		String bio = request.getParameter("bio");
+		//追加 ステータスint型へ変換１：公開０：非公開
+		String statusStr = request.getParameter("status");
+		int status =(statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 1;
 		//バイナリーデータを受け取る際は、Part型を使う
 		Part filePart = request.getPart("profileImage");
 		//profileImageをString型へ変換し、ファイル名を取り出す
 		String profileImage =filePart.getSubmittedFileName();
 		
+		
 		//バリデーションチェック
 		//名前とメールアドレスが空の場合はじく
-		if(name == null || name.isEmpty() || email == null || email.isEmpty()) {
+		if(name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty()) {
 			//失敗した場合セッションに入れてredirect sesson省略形を使用
 			request.getSession().setAttribute("errorMsg","名前とメールアドレスは必須事項です。");
 			response.sendRedirect("update?id="+ id);
@@ -72,11 +77,15 @@ public class UpdateServlet extends HttpServlet {
 		if(name.length() >250 || email.length() >250 || ruby.length()>=250) {
 			request.getSession().setAttribute("errorMsg","名前またはふりがな、メールアドレスは250文字以内で入力してください");
 			response.sendRedirect("update?id="+ id );
-			return;
+			return; 
 		}
 		//パスワードが入力されているときだけバリデーションする。nullと空でないとき
-		if(password != null && !password.isEmpty()) {
+		//まずは現在のパスワード取得。
+		User currentUser = dao.findById(id);
+		if(password != null && !password.trim().isEmpty()) {
 			//passwordUtilからisValidPasswordメソッド起動
+			// 更新する場合トリムした綺麗なパスワードでバリデーション
+		    password = password.trim();
 			if(!PasswordUtil.isValidPassword(password)) {
 			request.getSession().setAttribute("errorMsg","パスワードは8-32文字の英数字（ハイフン可）で入力してください");
 			response.sendRedirect("update?id=" +id);
@@ -84,11 +93,12 @@ public class UpdateServlet extends HttpServlet {
 			
 			}
 		// パスワードが未入力（空）の場合、現在のパスワードを維持する 
-		}else if(password == null || password.isEmpty()) {
-			   User currentUser = dao.findById(id); // 現在の情報をDBから取得
+		}else  {
 			   password = currentUser.getPassword(); // 今のパスワードを再セット
 			}
 		
+		//一般ユーザー（role==0）のみバリデーション　
+		if (role == 0) {
 		//ふりがなをひらがな入力していないとバリデーションエラー
 		if(!ruby.isEmpty() && !ruby.matches("^[\\u3040-\\u309F]+$")) {
 			request.getSession().setAttribute("errorMsg","ふりがなは「ひらがな」で入力してください");
@@ -127,12 +137,13 @@ public class UpdateServlet extends HttpServlet {
 			response.sendRedirect("update?id=" +id);
 			return;
 		}
+		}
 		//もし画像が選ばれていなければ、DBには現在の画像名を保存する
 		if(profileImage == null || profileImage.isEmpty()) {
 			profileImage = dao.findById(id).getProfileImage();
 		//画像がある時は、webapp→uploadsへセット
 		}else {
-			String uploadPath ="C:\\Users\\user\\ForDevelop\\workspace\\myportfolio\\src\\main\\webapp\\uploads";
+			String uploadPath =getServletContext().getRealPath("/uploads");
 			
 			//もしフォルダが存在しない場合に作成
 			java.io.File uploadDir =new java.io.File(uploadPath);
@@ -149,7 +160,7 @@ public class UpdateServlet extends HttpServlet {
 		
 		
 		//オブジェクトへ（インスタンス化）
-		User user = new User(id, name, email, password, role, ruby, gender, age, bio, profileImage);
+		User user = new User(id, name, email, password, role, ruby, gender, age, bio, profileImage,status);
 		
 		//DAOメソッド起動
 		UserDao userDao = new UserDao();

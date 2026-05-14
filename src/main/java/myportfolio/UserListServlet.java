@@ -60,6 +60,7 @@ public class UserListServlet extends HttpServlet{
     		System.out.println(user.getName());
     		System.out.println(user.getEmail());
     		System.out.println("最大ページ数"+maxPage);
+    		System.out.println(user.getStatus());
     		}
 		}
 		

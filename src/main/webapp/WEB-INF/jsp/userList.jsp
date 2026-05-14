@@ -1,6 +1,7 @@
 <%--1. 設定；javaリストやUserクラスを使用できるようにする--%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, myportfolio.User" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 
 <!DOCTYPE html>
@@ -75,7 +76,10 @@ body{
     	<th>名前</th>
     	<th>メールアドレス</th>
     	<th>ステータス</th>
-    	<th>操作</th>
+    	<th>役割</th>
+    	<th>編集・削除</th>
+    	<th>権限変更</th>
+    	<th>ステータス変更</th>
     	</tr>
     	<%
     	//Servletから飛ばしたユーザーリストの取得
@@ -92,7 +96,17 @@ body{
     		<td><%= user.getName() %></td>
     		<td><%= user.getEmail() %></td>
     		<td>
-    			<%--管理者と一般の切り替え--%>
+    		<c:choose>
+    				<c:when test="${user.status == 1}">
+    					<span class="status-public">公開</span>
+    				</c:when>
+    			<c:otherwise>
+    				<span class="status-private">非公開</span>
+    			</c:otherwise>
+    		</c:choose>	
+    		</td>
+    		<td>
+    		<%--管理者と一般の切り替え--%>
            	<%
        			int role = user.getRole(); // DBから持ってきた値をセット
        			if (role == 1) {
@@ -102,29 +116,45 @@ body{
         		} else {
     		%>
            		 <span style="color: gray;">一般</span>
-    <%
-        }
-    %>
-    		</td>
-    		<td>
+		   <%
+		       }
+		   %>
+		   </td>
+		   <td>
+		   	   		
 				<%--編集リンク --%>
     			<a href="update?id=<%= user.getId() %>" >編集</a>
 				<%--削除リンク --%>    		
     			<a href="delete?id=<%= user.getId() %>" 
        				onclick="return checkDelete('<%= user.getName() %>')" 
        				style="color:red;">削除</a>
-       			<%--ステータス切替ボタン（新規追加）--%>
+    		<%-- --<a href="delete?id=1" 
+    		onclick ="return checkDelete('<%=user.getName() %>')"
+    		style="color:red;" >テスト削除リンク</a>
+    		--%>
+    		</td>
+    		<td>
+    			<%--権限切替ボタン--%>
        			<form action="toggleStatus" method="post" style="display:inline;">
        				<input type="hidden" name="id" value="<%= user.getId() %>">
        			<%--現在のロールが1なら0へ、0なら１へ切り替える値を送信--%>
        			<input type="hidden" name="newRole" value="<%=user.getRole() == 1 ? 0 : 1%>" >
        			<button type="submit" style="cursor:pointer;">権限変更</button>
        			</form>
-    		<%-- --<a href="delete?id=1" 
-    		onclick ="return checkDelete('<%=user.getName() %>')"
-    		style="color:red;" >テスト削除リンク</a>
-    		--%>
     		</td>
+    		<td>
+			    <%-- クリックするとidと「次にしたいstatus」をサーブレットへ --%>
+			    <form action="quickUpdateStatus" method="post" style="display:inline;">
+			        <%-- --%>
+			        <input type="hidden" name="id" value="<%= user.getId() %>">
+			        <input type="hidden" name="nextStatus" value="<%= user.getStatus() == 1 ? 0 : 1 %>">
+			        
+			        <button type="submit" class="btn-status">
+			            <%= user.getStatus() == 1 ? "公開中" : "非公開" %>
+			        </button>
+			    </form>
+			</td>
+    		
     		</tr>
     	<%
     		}//for文閉じ
