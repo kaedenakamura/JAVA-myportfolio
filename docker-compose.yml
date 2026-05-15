@@ -7,7 +7,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - JDBC_URL=jdbc:mysql://db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
+      - JDBC_URL=jdbc:mysql://db:3307/test_db?useSSL=false&allowPublicKeyRetrieval=true
       - DB_USER=root
       - DB_PASS=ROOT
 
@@ -15,6 +15,8 @@ services:
     image: mysql:8.0
     ports:
       - "3307:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=test_db
       - MYSQL_ROOT_PASSWORD=ROOT

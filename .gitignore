@@ -1,8 +1,17 @@
+# Eclipse関連のファイル（個人の設定なので共有不要）
 /bin/
 /build/
 .settings/
 .project
 .classpath
 .metadata/
-config.properties
+
+# Mavenのビルド出力先
 /target/
+
+# DBのデータフォルダ（今回エラーの原因になった場所）
+mysql_data/
+
+# OSや設定ファイル
+.DS_Store
+config.properties
