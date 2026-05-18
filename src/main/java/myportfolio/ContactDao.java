@@ -12,9 +12,9 @@ import java.util.List;
 
 public class ContactDao {
 	
-	 private final String JDBC_URL = "jdbc:mysql://localhost:3306/test_db?useSSL=false&serverTimezone=Asia/Tokyo";
-	    private final String USER = "root";
-	    private final String PASS = "ROOT";
+    private static final String JDBC_URL =System.getenv("JDBC_URL");
+        private static final String USER =System.getenv("JDBC_USER");
+        private static final String PASS =System.getenv("JDBC_PASSWORD");
 
 	  //コンストラクターとして最初にDB接続を開通させる
 		public ContactDao() {

@@ -7,11 +7,9 @@ services:
       db:
         condition: service_healthy
     environment:
-      - JDBC_URL=jdbc:mysql://db:3306/test_db
-      - JDBC_USER=root
-      - JDBC_PASSWORD=ROOT
-    networks:
-      - app-network
+      - JDBC_URL=jdbc:mysql://db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
+      - DB_USER=root
+      - DB_PASS=ROOT
 
   db:
     image: mysql:8.0
@@ -19,7 +17,6 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql_data:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_DATABASE=test_db
       - MYSQL_ROOT_PASSWORD=ROOT
@@ -27,9 +24,3 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge

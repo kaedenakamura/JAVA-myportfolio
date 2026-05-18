@@ -10,9 +10,9 @@ import java.util.List;
 
 public class LikeDao {
 	//DB接続に必要な情報を定数として定義
-	 private final String JDBC_URL = "jdbc:mysql://localhost:3306/test_db?useSSL=false&serverTimezone=Asia/Tokyo";
-	    private final String USER = "root";
-	    private final String PASS = "ROOT";
+    private static final String JDBC_URL = System.getenv("JDBC_URL");
+        private static final String USER =System.getenv("JDBC_USER");
+        private static final String PASS =System.getenv("JDBC_PASSWORD");
 	//接続開通テストははログイン時にするので省略（2重アクセス負担増の為。）
 	
 		
