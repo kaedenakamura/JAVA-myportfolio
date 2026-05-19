@@ -7,7 +7,7 @@
 .metadata/
 
 # Mavenのビルド出力先
-/target/
+# /target/
 
 # DBのデータフォルダ（今回エラーの原因になった場所）
 mysql_data/
