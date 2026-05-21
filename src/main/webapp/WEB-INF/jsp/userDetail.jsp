@@ -60,7 +60,7 @@
     <div class="profile-header">プロフィール詳細</div>
     	<%--プロフィール画像--%>
 	<c:choose>
-		<c:when test="${not empty LoginUser.profileImage}">
+		<c:when test="${not empty user.profileImage}">
 			<img src="${pageContext.request.contextPath}/uploads/${user.profileImage}"
 			         alt="${user.name}の画像" class="profile-img-large">
 		</c:when>

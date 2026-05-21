@@ -56,11 +56,12 @@ public class ContactServlet extends HttpServlet{
 			.forward(request,response);
 			return;
 		}
-		}
+	}
 		
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException , IOException{
+		request.setCharacterEncoding("UTF-8");
 		ContactDao dao = new ContactDao();
 		String action = request.getParameter("action");
 		System.out.println(action);
@@ -69,6 +70,7 @@ public class ContactServlet extends HttpServlet{
 	    String statusStr = request.getParameter("status");
 	    String email = request.getParameter("email");
 	    String body =request.getParameter("body");
+	    String category = request.getParameter("category");
 	    
 	    //バリデーション
 	    // メールアドレスの形式チェック（正規表現）
@@ -77,64 +79,64 @@ public class ContactServlet extends HttpServlet{
 		
 	    //お問合せフォームからaction=insertで受け取る
 	    if("insert".equals(action)) {
-	    //先にバリデーションチェック
-		//新規登録画面にて入力（register.jsp）した情報のバリデーションチェック
 			//名前メールが空とnullならエラー
-		if (name == null || name.isEmpty() || email == null || email.isEmpty() 
-				) {
-			request.setAttribute("error","名前もしくはメールアドレスが空です");
-	    	request.getRequestDispatcher("/WEB-INF/jsp/contactForm.jsp").forward(request, response);
-	    	return;}
-		//名前、メールが２５０文字以上の場合はerrorを返すバリデーション
-		if (email.length() >=250 || name.length()>=250 ) {
-			request.setAttribute("error","メールアドレス、名前を250文字以内で入力してください");
-	    	request.getRequestDispatcher("/WEB-INF/jsp/contactForm.jsp").forward(request, response);
-	    	return;
-		}
-	    //メールアドレスの形式が正しくなく、エラーがある場合は入力画面へ戻す
-	    if(!email.matches(emailPattern)) {
-	    	request.setAttribute("error","メールアドレスの形式が正しくありません");
-	    	request.getRequestDispatcher("/WEB-INF/jsp/contactForm.jsp").forward(request, response);
-	    	return;
-	    }
-	    //お問合せフォーム内容がないときエラー
-	    if(body == null || body.trim().isEmpty()) {
-	    	request.setAttribute("error","お問い合わせ内容を入力してください");
-	    	request.getRequestDispatcher("/WEB-INF/jsp/contactForm.jsp").forward(request,response);
-	    	return;
-	    }
-	    	//バリデーションチェックが通れば処理を開始する
-	    	//jspよりデータの回収
-	    	String category =request.getParameter("category");
-	    	//ガード
-	    	if(name !=null && !name.isEmpty() && body !=null && !body.isEmpty()) {
-	    		//Dao呼び出しセット
-	    		Contact newContact = new Contact(name,email,category,body);
-	    		System.out.println(name);
-	    		//Daoinsertめどっど起動
-	    		dao.insert(newContact);		
-	    		
-	    		//メール送信
-	    		EmailSender.sendContactEmail(newContact);
-	    		System.out.println(newContact);
-	    		HttpSession session = request.getSession();
-	    		session.setAttribute("success" , "お問合せ送信しました。ありがとうございました。");
-	    		response.sendRedirect("contact?action=new");
-	    		return;
-	    	}
-	    
-	    	//contactdetail.jspよりボダン押されたとき処理
-	    	}else if("contact".equals(action)) {
-		    	if(idStr !=null && statusStr != null) {
-				//Idとstatusをjspより取得してupdateStatusメソッドにてＤＢへ格納
+			if (name == null || name.isEmpty() || email == null || email.isEmpty()) {
+				forwardContactForm(request, response, "名前もしくはメールアドレスが空です", name, email, body, category);
+				return;
+			}
+			//名前、メールが２５０文字以上の場合はerrorを返すバリデーション
+			if (email.length() >=250 || name.length()>=250 ) {
+				forwardContactForm(request, response, "メールアドレス、名前を250文字以内で入力してください", name, email, body, category);
+				return;
+			}
+		    //メールアドレスの形式が正しくなく、エラーがある場合は入力画面へ戻す
+		    if(!email.matches(emailPattern)) {
+		    	forwardContactForm(request, response, "メールアドレスの形式が正しくありません", name, email, body, category);
+		    	return;
+		    }
+		    //お問合せフォーム内容がないときエラー
+		    if(body == null || body.trim().isEmpty()) {
+		    	forwardContactForm(request, response, "お問い合わせ内容を入力してください", name, email, body, category);
+		    	return;
+		    }
+			//カテゴリー未入力の際のバリデーションエラー
+			if(category == null || category.trim().isEmpty()){
+				forwardContactForm(request, response, "カテゴリーを選択してください", name, email, body, category);
+				return;
+			}
+
+			Contact newContact = new Contact(name, email, category, body);
+			System.out.println(name);
+			dao.insert(newContact);
+
+			EmailSender.sendContactEmail(newContact);
+			System.out.println(newContact);
+			HttpSession session = request.getSession();
+			session.setAttribute("success" , "お問合せ送信しました。ありがとうございました。");
+			response.sendRedirect("contact?action=new");
+			return;
+
+	    } else if("contact".equals(action)) {
+	    	if(idStr !=null && statusStr != null) {
 				int id = Integer.parseInt(idStr);
 			    int status = Integer.parseInt(statusStr);
 				dao.updateStatus(id, status);
 				response.sendRedirect("contact?action=list");
 			    return;
-				}
-	    	}
+			}
 	    }
-				
 	}
-			
+
+	private void forwardContactForm(HttpServletRequest request, HttpServletResponse response,
+			String error, String name, String email, String body, String category)
+			throws ServletException, IOException {
+		request.setAttribute("error", error);
+		request.setAttribute("name", name != null ? name : "");
+		request.setAttribute("email", email != null ? email : "");
+		request.setAttribute("body", body != null ? body : "");
+		request.setAttribute("category", category != null ? category : "");
+		CategoryDao categoryDao = new CategoryDao();
+		request.setAttribute("categoryList", categoryDao.findAll());
+		request.getRequestDispatcher("/WEB-INF/jsp/contactForm.jsp").forward(request, response);
+	}
+}

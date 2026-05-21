@@ -60,11 +60,11 @@ width:100%; padding:10px; margin-top:5px; border:1px solid rgb(192, 192, 192); b
 		<input type="password" id="password" name="password" placeholder="8文字以上の英数字">
 		
 		<label for="gender">性別</label>
-		<input type="radio" id="gender" name="gender" value="male" ${LoginUser.gender == "male" ? "checked" : ''}>男性
-		<input type="radio" id="gender" name="gender" value="female" ${LoginUser.gender == 'female' ? 'checked' :''}>女性
+		<input type="radio" id="gender" name="gender" value="male" ${LoginUser.gender == "male" ? "checked" : ''}><label for="male">男性</label>
+		<input type="radio" id="female" name="gender" value="female" ${LoginUser.gender == 'female' ? 'checked' :''}><label for="female">女性</label>
 		
 		<label for="age">年齢</label>
-		<input type="number" id="age" name="age" value="${LoginUser.age}" min="0" max="150">
+		<input type="number" id="age" name="age" value="${LoginUser.age}" min="0" max="999">
 		
 		<label for="bio">自己紹介</label>
 		<textarea id="bio" name="bio" rows="5">${LoginUser.bio}</textarea>

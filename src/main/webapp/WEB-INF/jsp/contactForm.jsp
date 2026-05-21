@@ -115,11 +115,11 @@ background-color: rgb(0,128,255);
 	<form  action="${pageContext.request.contextPath}/contact?action=insert" method="post">
 	<div class="form-group">
 	<label for="name">お名前</label>
-	<input type="text" name="name" id="name" required placeholder="名前">
+	<input type="text" name="name" id="name" required placeholder="名前" value="${name}">
 	</div>
 	<div class="form-group">
 	<label for="name">メールアドレス</label>
-	<input type="email" id="email" name="email" required placeholder="example@mail.com">
+	<input type="email" id="email" name="email" required placeholder="example@mail.com" value="${email}">
 	</div>
 	<div class="form-group">
 	<label for="category">問合せカテゴリー</label>
@@ -127,14 +127,14 @@ background-color: rgb(0,128,255);
 		<option value="">選択してください</option>
 		<%--サーブレットから届いたリストを回す--%>
 		<c:forEach var="cat" items="${categoryList}">
-			<option value="${cat.id}">${cat.categoryGroup}</option>
+			<option value="${cat.id}" ${category == cat.id ? 'selected' : ''}>${cat.categoryGroup}</option>
 		</c:forEach>
 	</select>
 	</div>
 	
 	<div class="form-group">
 	<label for="body">お問合せ内容</label>
-	<textarea name="body" id="body" rows="10" required ></textarea>
+	<textarea name="body" id="body" rows="10" required>${body}</textarea>
 	</div>
 	<button type="submit" class="btn-submit">送信する</button>
 	</div>

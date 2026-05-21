@@ -178,9 +178,13 @@ public class UserServlet extends HttpServlet {
 
 		
 		if(userDao.insert(user)) {
-		    response.sendRedirect(request.getContextPath()+"/html/login.jsp?registerSuccess=1"); 
+			System.out.println("登録成功");
+			// POST-Redirect-GET: 更新ボタンでの二重登録を防ぐ
+			response.sendRedirect(request.getContextPath() + "/html/register.jsp?registerSuccess=1");
+		    return;
 		} else {
-		    response.sendRedirect(request.getContextPath()+"/html/register.jsp"); 
+		    forwardWithError(request, response, "11", name, ruby, email, ageStr, bio, gender, role, status);
+		    return;
 		}
 		}
 	

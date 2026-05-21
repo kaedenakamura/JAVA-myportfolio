@@ -11,6 +11,13 @@
 <body>
 <div class="container">
 	<h2>ユーザー登録</h2>
+	<%--登録成功メッセージ（リダイレクト後 ?registerSuccess=1）--%>
+	<% if ("1".equals(request.getParameter("registerSuccess"))) { %>
+	<p style="color:green; font-weight:bold;">
+		登録が完了しました。ログイン画面からログインしてください。
+	</p>
+	<p><a href="${pageContext.request.contextPath}/html/login.jsp">ログイン画面へ</a></p>
+	<% } %>
 	<% 
 	//URLのerror=1 を受け取る
 	String error = request.getParameter("error");
@@ -61,6 +68,9 @@
 	//追加：URLのerror10を受け取る
 	}else if("10".equals(error)){%>
 	<p style="color:red;">メールアドレスの形式が違います。</p>
+	<% 
+	}else if("11".equals(error)){%>
+	<p style="color:red;">登録に失敗しました。もう一度お試しください。</p>
 	<%
 	}
 	%>

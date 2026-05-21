@@ -124,12 +124,12 @@ public class LikeDao {
 		List<User> ranking = new ArrayList<>();
 		
 		
-		String sql = " SELECT u.id , u.name , u.gender , u.bio , COUNT(l.id) AS like_count"
+		String sql = " SELECT u.id , u.name , u.gender , u.bio , COUNT(l.id) AS like_count ,u.profile_image"
 					+ " FROM users AS u JOIN likes AS l ON u.id =l.to_user_id"
 					+ " WHERE"
 					+ " l.created_at >= DATE_FORMAT(NOW(),'%Y-%m-01')"
 					+ " AND l.is_delete = 0 AND u.status = 1" 
-					+ " GROUP BY u.id , u.name "
+					+ " GROUP BY u.id , u.name , u.gender , u.bio , u.profile_image "
 					+ " ORDER BY like_count DESC";
 		try(Connection con =DriverManager.getConnection(JDBC_URL,USER,PASS);
 				PreparedStatement ps = con.prepareStatement(sql);
@@ -142,6 +142,7 @@ public class LikeDao {
 				user.setName(rs.getString("name"));
 				user.setGender(rs.getString("gender"));
 				user.setBio(rs.getString("bio"));
+				user.setProfileImage(rs.getString("profile_image"));
 				//userクラスのsetlikecountへ追加
 				user.setLikeCount(rs.getInt("like_count"));
 				

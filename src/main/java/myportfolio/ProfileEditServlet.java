@@ -77,6 +77,13 @@ public class ProfileEditServlet extends HttpServlet{
 		String ageStr = request.getParameter("age");//バリデーション通ればint型へ変換
 		int age = 0;//バリデーション対策で初期値設定
 		String bio  = request.getParameter("bio");
+		// 公開設定はフォームにないため、DBの現在値を維持する
+		User currentUser = dao.findById(id);
+		if (currentUser == null) {
+			response.sendRedirect(request.getContextPath() + "/html/login.jsp");
+			return;
+		}
+		int status = currentUser.getStatus();
 		
 		//画像の受け取り
 		//バイナリーデータを受け取る際は、Part型を使う
@@ -94,8 +101,12 @@ public class ProfileEditServlet extends HttpServlet{
 			return;
 		}
 		//name.email.ruby250文字以上あればはじく
+		if (ruby == null) {
+			ruby = "";
+		}
 		if(name.length() >=250 || email.length() >=250 || ruby.length() >= 250) {
 			request.getSession().setAttribute("errorMsg" , "名前またはふりがな、メールアドレスは250文字以内で入力してください");
+			response.sendRedirect("profileEdit");
 			return;
 		}
 		//パスワードが入力されているときにバリデーションする
@@ -108,12 +119,16 @@ public class ProfileEditServlet extends HttpServlet{
 			}
 		//パスワードが未入力（空）の場合、現在のパスワードを維持する
 			}else if (password == null || password.trim().isEmpty()) {
-				//現在の情報をDBから取得
-				User currentUser = dao.findById(id);
-				//今のパスワードを取得→パスワードにセット
 				password = currentUser.getPassword();
 			}
-		//ふりがなをひらがな入力していないとバリデーションエラー
+		//ふりがなが空の場合はじく(追記)
+			if(ruby == null || ruby.trim().isEmpty()) {
+				request.getSession().setAttribute("errorMsg","ふりがなは必須事項です。");
+				response.sendRedirect("profileEdit");
+				return;
+			}
+			
+			//ふりがなをひらがな入力していないとバリデーションエラー
 		if(!ruby.trim().isEmpty() && !ruby.matches("^[\\u3040-\\u309F]+$")) {
 			request.getSession().setAttribute("errorMsg","ふりがなは「ひらがな」入力してください");
 			response.sendRedirect("profileEdit");
@@ -189,7 +204,7 @@ public class ProfileEditServlet extends HttpServlet{
 		
 		
 		//オブジェクト化
-		User user = new User(id, name, email, password, role, ruby, gender, age, bio, profileImage);
+		User user = new User(id, name, email, password, role, ruby, gender, age, bio, profileImage,status);
 		
 		//DAOメソッド起動
 		UserDao userDao = new UserDao();
@@ -197,9 +212,11 @@ public class ProfileEditServlet extends HttpServlet{
 		
 		//判定してリダイレクト
 		if(isSuccess) {
-			//成功したらダッシュボードへ戻る
 			System.out.println(id+name+"さんの情報を更新しました");
-			//セッション
+			User updatedUser = userDao.findById(id);
+			if (updatedUser != null) {
+				session.setAttribute("LoginUser", updatedUser);
+			}
 			session.setAttribute("msg", "情報を更新しました!");
 			response.sendRedirect("profileEdit");
 		}

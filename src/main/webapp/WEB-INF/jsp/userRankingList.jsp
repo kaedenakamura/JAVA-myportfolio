@@ -102,6 +102,16 @@ h2{
     			${status.index + 1}
 			</div>
 			<h3>${user.name}</h3>
+			<%--プロフィール画像--%>
+			<c:choose>
+				<c:when test="${not empty user.profileImage}">
+					<img src="${pageContext.request.contextPath}/uploads/${user.profileImage}"
+							 alt="${user.name}の画像"  style="width:100px; height:100px; border-radius:50%; object-fit: cover;">
+				</c:when>
+				<c:otherwise>
+					<div class="profile-img-large" style="display:flex; align-items:center; justify-content:center; margin: auto;">No Image</div>
+				</c:otherwise>
+			</c:choose>
 			<p>
 			    <c:choose>
 			        <c:when test="${user.gender eq 'male'}">
