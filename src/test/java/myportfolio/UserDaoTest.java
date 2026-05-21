@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test; //テスト用に必要
  * 目的：DBへの処理が正しく行われるかを検証します。
  */
 
+@IntegrationTest
 public class UserDaoTest {
 	@Test
 	public void testInsertUser() {

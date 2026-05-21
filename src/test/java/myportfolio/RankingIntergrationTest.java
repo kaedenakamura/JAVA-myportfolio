@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+@IntegrationTest
 public class RankingIntergrationTest {
 		@Test
 		public void testLikeToRankingFrow() {

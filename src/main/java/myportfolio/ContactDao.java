@@ -75,7 +75,7 @@ public class ContactDao {
 		            if (rs.next()) {
 		                contact = new Contact(
 		                        rs.getInt("id"),
-		                        rs.getString("Name"),
+		                        rs.getString("name"),
 		                        rs.getString("email"),
 		                        rs.getString("category"),
 		                        rs.getString("body"),

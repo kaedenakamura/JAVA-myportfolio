@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
  */
 
 
+@IntegrationTest
 public class ContactDaoTest {
 	@Test
 	public void testInsertContact() {

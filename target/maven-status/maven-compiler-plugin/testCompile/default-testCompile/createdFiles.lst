@@ -1,6 +1,8 @@
 myportfolio\ContactDaoTest.class
 myportfolio\ContactIntegrationTest.class
+myportfolio\IntegrationTest.class
+myportfolio\RegistrationIntegrationTest.class
+myportfolio\ContactTest.class
 myportfolio\ProfileRankingTest.class
 myportfolio\RankingIntergrationTest.class
 myportfolio\UserDaoTest.class
-myportfolio\RegistrationIntegrationTest.class

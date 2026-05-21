@@ -63,11 +63,18 @@ public class Contact {
 	
 	//getcategory nameメソッドの呼び出し
 	public String getCategoryName() {
-		// categoryをDBリストからここに格納するカスタムゲッター
-		CategoryDao categoryDao = new CategoryDao();
-		int id = Integer.parseInt(this.category);
-		Category cat =categoryDao.findById(id);
-		return (cat !=null) ? cat.getCategoryGroup() : "不明";
+		if (this.category == null || this.category.isBlank()) {
+			return "不明";
+		}
+		try {
+			int id = Integer.parseInt(this.category.trim());
+			CategoryDao categoryDao = new CategoryDao();
+			Category cat = categoryDao.findById(id);
+			return (cat != null) ? cat.getCategoryGroup() : "不明";
+		} catch (NumberFormatException e) {
+			// 旧データ・テストデータなどカテゴリーID以外が入っている場合はそのまま表示
+			return this.category;
+		}
 	}
 	//getStatusメソッドの作成
 	public String getStatusName() {

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
  */
 
 
+@IntegrationTest
 public class ProfileRankingTest {
 	@Test
 	public void testProfileUpdate() {

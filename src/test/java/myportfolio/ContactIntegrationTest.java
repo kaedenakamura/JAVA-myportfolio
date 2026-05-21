@@ -2,6 +2,7 @@ package myportfolio;
 
 import org.junit.jupiter.api.Test;
 
+@IntegrationTest
 public class ContactIntegrationTest {
 
 	@Test

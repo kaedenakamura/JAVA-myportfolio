@@ -15,3 +15,4 @@ mysql_data/
 # OSや設定ファイル
 .DS_Store
 config.properties
+/target/

@@ -13,7 +13,7 @@
 
   <name>myportfolio</name>
 
-  <properties>
+  <properties> 
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -79,13 +79,51 @@
         </configuration>
       </plugin>
 
-      <!-- WAR作成 -->
+      <!-- WAR作成（Dockerfile が target/ROOT.war を参照） -->
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.4.0</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <warName>ROOT</warName>
+        </configuration>
+      </plugin>
+
+      <!-- 通常ビルドではDB不要の単体テストのみ実行 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.4</version>
+        <configuration>
+          <excludedGroups>integration</excludedGroups>
+        </configuration>
       </plugin>
 
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>integration</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.5.4</version>
+            <configuration>
+              <groups>integration</groups>
+              <excludedGroups></excludedGroups>
+              <environmentVariables>
+                <JDBC_URL>jdbc:mysql://localhost:3307/test_db?useSSL=false&amp;allowPublicKeyRetrieval=true</JDBC_URL>
+                <JDBC_USER>root</JDBC_USER>
+                <JDBC_PASSWORD>ROOT</JDBC_PASSWORD>
+              </environmentVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
  * 目的：画面からの入力を想定した一連の流れが正常に終了するかを検証する
  */
 
+@IntegrationTest
 public class RegistrationIntegrationTest {
 	@Test
 	public void testRegistration() {
