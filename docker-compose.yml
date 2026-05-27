@@ -10,6 +10,10 @@ services:
       - JDBC_URL=jdbc:mysql://db:3306/test_db
       - JDBC_USER=root
       - JDBC_PASSWORD=ROOT
+      # webapps/ROOT 配下にマウントすると WAR 展開前に空の ROOT ができ 404 になるため webapps の外に置く
+      - UPLOAD_DIR=/data/uploads
+    volumes:
+      - ./uploads_data:/data/uploads
     networks:
       - app-network
 

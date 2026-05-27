@@ -15,16 +15,9 @@ public class DeleteServlet extends HttpServlet {
 	protected static final long serialVersionUID = 1L;
 	protected void doGet(HttpServletRequest request , HttpServletResponse response) 
 	throws ServletException ,IOException {
-		
-		//セッションチェック(LoginUser)
-		//HttpSession session = request.getSession();
-		//User loginUser =(User) session.getAttribute("LoginUser");
-		
-		//if(loginUser==null) {
-			//response.sendRedirect("html/login.jsp");
-			//return;
-			//}
-		
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//設定お決まり
 		request.setCharacterEncoding("UTF-8");
 		//parameter受け取り

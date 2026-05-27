@@ -14,6 +14,9 @@ import jakarta.servlet.http.HttpSession;
 public class RestorServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException , IOException {
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//IDを取得して数値に変換
 		String idStr = request.getParameter("id");
 		//IDがnull出ない場合変換

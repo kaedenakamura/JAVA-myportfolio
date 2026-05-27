@@ -11,6 +11,7 @@
 
 # DBのデータフォルダ（今回エラーの原因になった場所）
 mysql_data/
+uploads_data/
 
 # OSや設定ファイル
 .DS_Store

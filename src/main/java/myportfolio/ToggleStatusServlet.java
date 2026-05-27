@@ -19,6 +19,9 @@ public class ToggleStatusServlet extends HttpServlet{
 	//管理者と一般の切り替えるサーブレット
 	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 		throws ServletException , IOException {
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//jspのformより送られてきた情報を取得
 		String idStr = request.getParameter("id");
         String roleStr = request.getParameter("newRole");

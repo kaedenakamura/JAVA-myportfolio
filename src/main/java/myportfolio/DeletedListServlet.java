@@ -14,6 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DeletedListServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException , IOException{
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//定番の文字化け防ぎ
 		request.setCharacterEncoding("UTF-8");
 		

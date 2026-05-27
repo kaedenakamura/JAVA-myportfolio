@@ -68,6 +68,7 @@
   </dependencies>
 
   <build>
+    <finalName>ROOT</finalName>
     <plugins>
 
       <!-- Javaコンパイル -->
@@ -85,7 +86,6 @@
         <version>3.4.0</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
-          <warName>ROOT</warName>
         </configuration>
       </plugin>
 

@@ -13,19 +13,13 @@ import jakarta.servlet.http.HttpSession;
 public class UserMyPageServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request ,HttpServletResponse response)
 	throws ServletException , IOException {
-		//loginServletからsession受け取り
-		HttpSession session =request.getSession();
-		User loginUser =(User)session.getAttribute("LoginUser");
-		//デバック
-		System.out.println(loginUser);
-		
-		//ガード、ログインしてない場合のバリデーション(ログインサーブレットに飛ばす)
-		if(loginUser == null) {
-			response.sendRedirect(request.getContextPath()+"/html/login.jsp");
+		User loginUser = AuthUtil.requireUser(request, response);
+		if (loginUser == null) {
 			return;
 		}
-		
-		
+		HttpSession session = request.getSession();
+		//デバック
+		System.out.println(loginUser);
 		//DAOメソッド起動
 		UserDao dao =new UserDao();
 		//IDより個人の全情報の取得（最新の）(loginSevletでfindUserしたときにIDを取得している)
@@ -36,9 +30,8 @@ public class UserMyPageServlet extends HttpServlet {
 			//セッション破棄2
 			session.invalidate();
 			response.sendRedirect(request.getContextPath()+"/html/login.jsp");
+			return;
 		}
-		
-		
 		//全情報をセット
 		request.setAttribute("user",latestUserInfo);
 		

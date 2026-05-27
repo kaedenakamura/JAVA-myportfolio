@@ -1,8 +1,10 @@
+myportfolio\AuthUtil.class
 myportfolio\UserDetailServlet.class
 myportfolio\PasswordUtil.class
 myportfolio\UserMyPageServlet.class
 myportfolio\CategoryDao.class
 myportfolio\UserServlet.class
+myportfolio\UploadUtil.class
 myportfolio\PysicalDeleteServlet.class
 myportfolio\RestorServlet.class
 myportfolio\QuickUpdateStatusServlet.class

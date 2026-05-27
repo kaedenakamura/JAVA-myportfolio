@@ -10,6 +10,10 @@ services:
       - JDBC_URL=jdbc:mysql://db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
       - JDBC_USER=root
       - JDBC_PASSWORD=ROOT
+      # webapps/ROOT 直下への bind mount は ROOT.war 展開と競合し 404 の原因になる
+      - UPLOAD_DIR=/data/uploads
+    volumes:
+      - ./uploads_data:/data/uploads
     networks:
       - app-network
 

@@ -32,6 +32,10 @@ public class ContactServlet extends HttpServlet{
 			return;
 			
 		}
+
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		
 		//detailの actionの値がいっちしているとき
 		//contactList.jspより詳細のボダン押されたとき処理
@@ -79,7 +83,6 @@ public class ContactServlet extends HttpServlet{
 		
 	    //お問合せフォームからaction=insertで受け取る
 	    if("insert".equals(action)) {
-			//名前メールが空とnullならエラー
 			if (name == null || name.isEmpty() || email == null || email.isEmpty()) {
 				forwardContactForm(request, response, "名前もしくはメールアドレスが空です", name, email, body, category);
 				return;
@@ -117,6 +120,9 @@ public class ContactServlet extends HttpServlet{
 			return;
 
 	    } else if("contact".equals(action)) {
+	    	if (AuthUtil.requireAdmin(request, response) == null) {
+	    		return;
+	    	}
 	    	if(idStr !=null && statusStr != null) {
 				int id = Integer.parseInt(idStr);
 			    int status = Integer.parseInt(statusStr);

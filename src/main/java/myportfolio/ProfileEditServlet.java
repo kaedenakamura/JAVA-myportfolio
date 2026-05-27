@@ -23,15 +23,12 @@ public class ProfileEditServlet extends HttpServlet{
 		//文字化け防ぎ
 		request.setCharacterEncoding("UTF-8");
 		
-		//loginServlet-myPage-よりLoginUserの受け取り
-		HttpSession session = request.getSession();
-		User loginUser =(User)session.getAttribute("LoginUser");
-		System.out.println(loginUser);
-		//ガード、ログインしてない場合のバリデーション(ログインサーブレットに飛ばす)
-		if(loginUser == null) {
-			response.sendRedirect(request.getContextPath()+"/html/login.jsp");
+		User loginUser = AuthUtil.requireUser(request, response);
+		if (loginUser == null) {
 			return;
 		}
+		HttpSession session = request.getSession();
+		System.out.println(loginUser);
 		UserDao dao = new UserDao();
 		//IDをつかって全情報を受け取る
 		User latestUserInfo = dao.findById(loginUser.getId());
@@ -55,15 +52,14 @@ public class ProfileEditServlet extends HttpServlet{
 		//文字化け防ぎ
 		request.setCharacterEncoding("UTF-8");
 		
-		UserDao dao = new UserDao();
-		HttpSession session = request.getSession();
-		User loginUser =(User)session.getAttribute("LoginUser");
-		System.out.println(loginUser);
-		
-		if(loginUser == null) {
-			response.sendRedirect(request.getContextPath()+"/html/login.jsp");
+		User loginUser = AuthUtil.requireUser(request, response);
+		if (loginUser == null) {
 			return;
 		}
+		UserDao dao = new UserDao();
+		HttpSession session = request.getSession();
+		System.out.println(loginUser);
+		
 		//自分のプロフィール編集の為ここでgetIdで自分のIdを受け取る
 		//idとroleはセッションから受け取る
 		int id =loginUser.getId();
@@ -77,13 +73,9 @@ public class ProfileEditServlet extends HttpServlet{
 		String ageStr = request.getParameter("age");//バリデーション通ればint型へ変換
 		int age = 0;//バリデーション対策で初期値設定
 		String bio  = request.getParameter("bio");
-		// 公開設定はフォームにないため、DBの現在値を維持する
-		User currentUser = dao.findById(id);
-		if (currentUser == null) {
-			response.sendRedirect(request.getContextPath() + "/html/login.jsp");
-			return;
-		}
-		int status = currentUser.getStatus();
+		String statusStr = request.getParameter("status");
+		//statusStrがnullまたは空の場合は1をセット、そうでなければInteger.parseIntでint型へ変換
+		int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 1;
 		
 		//画像の受け取り
 		//バイナリーデータを受け取る際は、Part型を使う
@@ -101,12 +93,8 @@ public class ProfileEditServlet extends HttpServlet{
 			return;
 		}
 		//name.email.ruby250文字以上あればはじく
-		if (ruby == null) {
-			ruby = "";
-		}
 		if(name.length() >=250 || email.length() >=250 || ruby.length() >= 250) {
 			request.getSession().setAttribute("errorMsg" , "名前またはふりがな、メールアドレスは250文字以内で入力してください");
-			response.sendRedirect("profileEdit");
 			return;
 		}
 		//パスワードが入力されているときにバリデーションする
@@ -119,6 +107,9 @@ public class ProfileEditServlet extends HttpServlet{
 			}
 		//パスワードが未入力（空）の場合、現在のパスワードを維持する
 			}else if (password == null || password.trim().isEmpty()) {
+				//現在の情報をDBから取得
+				User currentUser = dao.findById(id);
+				//今のパスワードを取得→パスワードにセット
 				password = currentUser.getPassword();
 			}
 		//ふりがなが空の場合はじく(追記)
@@ -186,13 +177,8 @@ public class ProfileEditServlet extends HttpServlet{
 			profileImage = dao.findById(id).getProfileImage();
 		//画像がある時は、webapp→uploadsへセット
 		}else {
-			String uploadPath =getServletContext().getRealPath("/uploads");
-			
-			//もしフォルダが存在しない場合に作成
-			java.io.File uploadDir =new java.io.File(uploadPath);
-			if(!uploadDir.exists()) {
-				uploadDir.mkdir();
-			}
+			String uploadPath = UploadUtil.getUploadDir(getServletContext());
+			UploadUtil.ensureUploadDir(uploadPath);
 			//フォルダにファイルを書き込む
 			// File.separator は Windowsの "\" や Mac/Linuxの "/" を自動で判別してくれる便利なやつ
 			filePart.write(uploadPath + java.io.File.separator + profileImage);
@@ -212,11 +198,9 @@ public class ProfileEditServlet extends HttpServlet{
 		
 		//判定してリダイレクト
 		if(isSuccess) {
+			//成功したらダッシュボードへ戻る
 			System.out.println(id+name+"さんの情報を更新しました");
-			User updatedUser = userDao.findById(id);
-			if (updatedUser != null) {
-				session.setAttribute("LoginUser", updatedUser);
-			}
+			//セッション
 			session.setAttribute("msg", "情報を更新しました!");
 			response.sendRedirect("profileEdit");
 		}

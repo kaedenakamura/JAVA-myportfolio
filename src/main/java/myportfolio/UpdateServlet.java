@@ -20,6 +20,9 @@ public class UpdateServlet extends HttpServlet {
 	// 編集画面を表示する（一覧の「編集」リンク～）
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 	        throws ServletException, IOException {
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//文字化け防ぎ
 		request.setCharacterEncoding("UTF-8");
 
@@ -34,13 +37,16 @@ public class UpdateServlet extends HttpServlet {
 	    // 3. データをJSPに渡して、編集画面を表示
 	    request.setAttribute("user", user);
 	    request.getRequestDispatcher("/WEB-INF/jsp/userUpdate.jsp").forward(request, response);
+		
 	}
-	
-	//編集画面の更新からくるpost
+
+		//編集画面の更新からくるpost管理者チェックを行う
 	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 		throws ServletException,IOException{
-				
-		//文字化けの防止
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
+		
 		request.setCharacterEncoding("UTF-8");		
 		//何度もDaoメソッド使うため先に定義
 		UserDao dao = new UserDao();
@@ -143,13 +149,8 @@ public class UpdateServlet extends HttpServlet {
 			profileImage = dao.findById(id).getProfileImage();
 		//画像がある時は、webapp→uploadsへセット
 		}else {
-			String uploadPath =getServletContext().getRealPath("/uploads");
-			
-			//もしフォルダが存在しない場合に作成
-			java.io.File uploadDir =new java.io.File(uploadPath);
-			if(!uploadDir.exists()) {
-				uploadDir.mkdir();
-			}
+			String uploadPath = UploadUtil.getUploadDir(getServletContext());
+			UploadUtil.ensureUploadDir(uploadPath);
 			//フォルダにファイルを書き込む
 			// File.separator は Windowsの "\" や Mac/Linuxの "/" を自動で判別してくれる便利なやつ
 			filePart.write(uploadPath + java.io.File.separator + profileImage);
@@ -161,7 +162,6 @@ public class UpdateServlet extends HttpServlet {
 		
 		//オブジェクトへ（インスタンス化）
 		User user = new User(id, name, email, password, role, ruby, gender, age, bio, profileImage,status);
-		
 		//DAOメソッド起動
 		UserDao userDao = new UserDao();
 		boolean isSuccess = userDao.update(user);

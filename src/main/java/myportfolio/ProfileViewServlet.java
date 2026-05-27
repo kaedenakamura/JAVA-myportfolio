@@ -7,7 +7,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/profileView")
 public class ProfileViewServlet extends HttpServlet {
@@ -15,13 +14,8 @@ public class ProfileViewServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request , HttpServletResponse response)
 	throws IOException , ServletException {
 		
-	//セッションからログイン中のユーザー情報を取得
-	HttpSession session = request.getSession();
-	User loginUser =(User)session.getAttribute("LoginUser");
-	
-	//ガード処理：ログインしていなければログイン画面へ
-	if(loginUser == null) {
-		response.sendRedirect(request.getContextPath()+"/login");
+	User loginUser = AuthUtil.requireUser(request, response);
+	if (loginUser == null) {
 		return;
 	}
 	

@@ -9,27 +9,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-    	        
-        HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("LoginUser");
-
-        // ログインチェック
-        if (loginUser == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        // 管理者かチェックちがったらmyPageサーブレットへ
-        if (loginUser.getRole() != 1) {
-            // 管理者でないなら一般ページへ
-            response.sendRedirect(request.getContextPath() + "/userMyPage");
+        if (AuthUtil.requireAdmin(request, response) == null) {
             return;
         }
 

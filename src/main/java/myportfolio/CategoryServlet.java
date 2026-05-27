@@ -14,6 +14,9 @@ import jakarta.servlet.http.HttpSession;
 public class CategoryServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request ,HttpServletResponse response)
 		throws ServletException , IOException{
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//文字化けの対策
 		request.setCharacterEncoding("UTF-8");
 		CategoryDao dao =new CategoryDao();
@@ -51,6 +54,9 @@ public class CategoryServlet extends HttpServlet {
 	}
 protected void doPost(HttpServletRequest request ,HttpServletResponse response) 
 		throws ServletException ,IOException{
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		//文字化け対策
 		request.setCharacterEncoding("UTF-8");
 		String action = request.getParameter("action");

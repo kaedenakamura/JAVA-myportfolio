@@ -138,16 +138,8 @@ public class UserServlet extends HttpServlet {
 	// 画像が「選ばれている」かつ「空でない」かチェック
 	if (filePart != null && profileImage != null && !profileImage.isEmpty()) {
 	    
-	    // 画像がある時の保存処理
-	    String uploadPath = getServletContext().getRealPath("/") + "uploads";
-	    
-	    // フォルダの存在確認と作成
-	    java.io.File uploadDir = new java.io.File(uploadPath);
-	    if (!uploadDir.exists()) {
-	        uploadDir.mkdir();
-	    }
-	    
-	    // 実際にファイルを書き込む
+	    String uploadPath = UploadUtil.getUploadDir(getServletContext());
+	    UploadUtil.ensureUploadDir(uploadPath);
 	    filePart.write(uploadPath + java.io.File.separator + profileImage);
 	    System.out.println("画像を保存しました: " + uploadPath + java.io.File.separator + profileImage);
 

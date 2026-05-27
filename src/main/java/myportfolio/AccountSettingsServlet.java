@@ -18,21 +18,14 @@ public class AccountSettingsServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException , IOException{
 		
-		//情報を受け取るloginUser
-		HttpSession session = request.getSession();
-		User loginUser =(User)session.getAttribute("LoginUser");
-		System.out.println(loginUser);
-		//ログイン情報がある場合はsettings.jspへ
-		//userMyPageからloginUser受け取りちゃんと受け取れているかチェック
-		if(loginUser ==null) {
-			
-			response.sendRedirect(request.getContextPath()+"/login");
+		User loginUser = AuthUtil.requireUser(request, response);
+		if (loginUser == null) {
 			return;
-		}else {
+		}
+		System.out.println(loginUser);
 		request.setAttribute("loginUser",loginUser);
 		request.getRequestDispatcher("/WEB-INF/jsp/settings.jsp")
 		.forward(request, response);
-		}
 	}
 		
 		//更新処理を書いていく
@@ -41,9 +34,11 @@ public class AccountSettingsServlet extends HttpServlet{
 			//文字化け防ぎ
 			request.setCharacterEncoding("UTF-8");
 			
-			//user
+			User loginUser = AuthUtil.requireUser(request, response);
+			if (loginUser == null) {
+				return;
+			}
 			HttpSession session = request.getSession();
-			User loginUser =(User)session.getAttribute("LoginUser");
 			System.out.println(loginUser);
 			String email = request.getParameter("email");
 			String password =request.getParameter("password");

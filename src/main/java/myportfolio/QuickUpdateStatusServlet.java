@@ -15,7 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class QuickUpdateStatusServlet extends HttpServlet{
 	protected void doPost(HttpServletRequest request , HttpServletResponse response) throws ServletException,IOException{
-		
+		if (AuthUtil.requireAdmin(request, response) == null) {
+			return;
+		}
 		// 1. まずは文字列として受け取る
 		String idStr = request.getParameter("id");
 		String nextStatusStr = request.getParameter("nextStatus");
